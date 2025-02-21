@@ -1,0 +1,63 @@
+.weather-recommendations {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+    color: #ffffff;
+}
+
+.recommendations-section {
+    background-color: #222;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: transform 0.2s ease;
+}
+
+.recommendations-section:hover {
+    transform: translateY(-2px);
+}
+
+.recommendations-section h3 {
+    color: #646cff;
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+.recommendations-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recommendations-section li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+}
+
+.recommendations-section li:last-child {
+    border-bottom: none;
+}
+
+.recommendations-section li::before {
+    content: '•';
+    color: #646cff;
+    margin-right: 8px;
+}
+
+.recommendations-section p {
+    margin: 0;
+    padding: 8px 0;
+}
+
+@media (max-width: 768px) {
+    .weather-recommendations {
+        padding: 16px;
+    }
+
+    .recommendations-section {
+        padding: 12px;
+    }
+} 

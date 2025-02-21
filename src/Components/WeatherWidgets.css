@@ -1,0 +1,278 @@
+.weather-widgets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+    color: #ffffff;
+}
+
+.widget {
+    background-color: #222;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.widget h3 {
+    color: #646cff;
+    margin-bottom: 16px;
+    font-size: 18px;
+}
+
+/* Солнечные часы */
+.sun-clock {
+    position: relative;
+}
+
+.current-time {
+    font-size: 32px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(100, 108, 255, 0.5);
+    margin: 10px 0 20px;
+    font-family: monospace;
+}
+
+.sun-path {
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(180deg, 
+        rgba(100, 108, 255, 0.2),
+        rgba(83, 91, 242, 0.1)
+    );
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    margin: 20px 0;
+    border: 1px solid rgba(100, 108, 255, 0.3);
+}
+
+.sun-marker {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    background: #fbbf24;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+    transition: left 0.5s ease;
+}
+
+.sun-marker::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background: radial-gradient(circle at center, rgba(251, 191, 36, 0.4), transparent 70%);
+    border-radius: 50%;
+    animation: sunGlow 2s ease-in-out infinite;
+}
+
+.time-marks {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    margin-top: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+}
+
+/* Фаза луны */
+.moon-animation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+}
+
+.moon-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    transition: all 0.3s ease;
+    position: relative;
+    animation: moonRotate 20s linear infinite;
+}
+
+.moon-icon::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent 70%);
+    animation: moonGlow 4s ease-in-out infinite;
+}
+
+.moon-description {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+}
+
+/* Компас */
+.compass {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    position: relative;
+    background: rgba(100, 108, 255, 0.1);
+    border: 1px solid rgba(100, 108, 255, 0.3);
+    margin: 20px auto;
+}
+
+.compass-arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 60px;
+    background: linear-gradient(180deg, #ff4444 50%, transparent 50%);
+    transform-origin: bottom center;
+    transition: transform 0.5s ease;
+}
+
+.compass-directions {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.direction-marker {
+    position: absolute;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.direction-marker.north { top: 10px; left: 50%; transform: translateX(-50%); }
+.direction-marker.east { right: 10px; top: 50%; transform: translateY(-50%); }
+.direction-marker.south { bottom: 10px; left: 50%; transform: translateX(-50%); }
+.direction-marker.west { left: 10px; top: 50%; transform: translateY(-50%); }
+
+/* Термометр */
+.thermometer-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    position: relative;
+}
+
+.thermometer-display {
+    width: 30px;
+    height: 200px;
+    background: linear-gradient(180deg, 
+        rgba(255, 68, 68, 0.1),
+        rgba(255, 255, 255, 0.1),
+        rgba(68, 68, 255, 0.1)
+    );
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(100, 108, 255, 0.3);
+}
+
+.temperature-indicator {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    transition: height 0.5s ease;
+    border-radius: 15px;
+}
+
+.temperature-indicator::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.2),
+        rgba(255, 255, 255, 0.1)
+    );
+    border-radius: 15px;
+}
+
+.temperature-scale {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 200px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    padding: 5px 0;
+}
+
+.temperature-value {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(100, 108, 255, 0.5);
+}
+
+/* Анимации */
+@keyframes sunGlow {
+    0% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.6; }
+}
+
+@keyframes moonGlow {
+    0% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 0.5; }
+}
+
+@keyframes moonRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Медиа-запросы */
+@media (max-width: 768px) {
+    .weather-widgets {
+        padding: 16px;
+        grid-template-columns: 1fr;
+    }
+
+    .widget {
+        padding: 12px;
+    }
+
+    .compass {
+        width: 120px;
+        height: 120px;
+    }
+
+    .thermometer-display {
+        height: 150px;
+    }
+
+    .moon-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 36px;
+    }
+} 

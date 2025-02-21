@@ -1,0 +1,101 @@
+.animated-weather {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.weather-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.weather-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Дневные стили */
+.animated-weather.day {
+    background: linear-gradient(to bottom, #87CEEB, #B0E0E6);
+}
+
+.animated-weather.day.clear {
+    background: linear-gradient(to bottom, #4A90E2, #87CEEB);
+}
+
+.animated-weather.day.clouds {
+    background: linear-gradient(to bottom, #7B8EA8, #B0C4DE);
+}
+
+.animated-weather.day.rain {
+    background: linear-gradient(to bottom, #4A5D7B, #708090);
+}
+
+.animated-weather.day.snow {
+    background: linear-gradient(to bottom, #B0C4DE, #E0FFFF);
+}
+
+.animated-weather.day.thunderstorm {
+    background: linear-gradient(to bottom, #2C3E50, #34495E);
+}
+
+/* Ночные стили */
+.animated-weather.night {
+    background: linear-gradient(to bottom, #1a1a2e, #16213E);
+}
+
+.animated-weather.night.clear {
+    background: linear-gradient(to bottom, #0F2027, #203A43);
+}
+
+.animated-weather.night.clouds {
+    background: linear-gradient(to bottom, #2C3E50, #3D556E);
+}
+
+.animated-weather.night.rain {
+    background: linear-gradient(to bottom, #1F2937, #374151);
+}
+
+.animated-weather.night.snow {
+    background: linear-gradient(to bottom, #2C3E50, #2F4F4F);
+}
+
+.animated-weather.night.thunderstorm {
+    background: linear-gradient(to bottom, #111827, #1F2937);
+}
+
+/* Анимации для грозовых фронтов */
+@keyframes thunderFlash {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    20% { opacity: 0; }
+    30% { opacity: 1; }
+    40% { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+.thunder-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.animated-weather.thunderstorm .thunder-flash {
+    animation: thunderFlash 6s infinite;
+} 

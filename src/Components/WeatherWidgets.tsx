@@ -73,6 +73,13 @@ const WeatherWidgets: React.FC<WeatherWidgetsProps> = ({
 
     const moonPhaseInfo = getMoonPhaseIcon();
 
+    const roundTemperature = (temp: number): string => {
+        const rounded = Math.abs(temp % 1) >= 0.5 ? 
+            Math.sign(temp) * Math.ceil(Math.abs(temp)) : 
+            Math.sign(temp) * Math.floor(Math.abs(temp));
+        return rounded.toString();
+    };
+
     return (
         <div className="weather-widgets">
             <div className="widget sun-clock">
@@ -123,10 +130,8 @@ const WeatherWidgets: React.FC<WeatherWidgetsProps> = ({
                         <div 
                             className="temperature-indicator" 
                             style={{ 
-                                height: `${Math.min(100, Math.max(0, ((temperature + 20) / 40) * 100))}%`,
-                                background: `linear-gradient(to top, 
-                                    ${temperature <= 0 ? '#4444ff' : '#ff4444'} 0%,
-                                    ${temperature <= 0 ? '#4444ff' : '#ff4444'} 100%)`
+                                height: `${((temperature + 20) / 40) * 100}%`,
+                                opacity: temperature <= -20 ? 0 : 1
                             }}
                         />
                     </div>
@@ -137,7 +142,7 @@ const WeatherWidgets: React.FC<WeatherWidgetsProps> = ({
                         <span>-10°</span>
                         <span>-20°</span>
                     </div>
-                    <div className="temperature-value">{temperature}°C</div>
+                    <div className="temperature-value">{roundTemperature(temperature)}°C</div>
                 </div>
             </div>
         </div>

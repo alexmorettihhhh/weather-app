@@ -1,9 +1,10 @@
 .weather-calendar {
-    background-color: #1a1a1a;
-    border-radius: 12px;
+    background-color: rgba(26, 26, 26, 0.8);
+    border-radius: 16px;
     padding: 24px;
     margin: 24px 0;
-    color: #ffffff;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
 }
 
 .calendar-header {
@@ -11,31 +12,42 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    padding: 0 12px;
 }
 
-.calendar-header button {
+.calendar-header h2 {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    background: linear-gradient(45deg, #646cff, #535bf2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.month-nav {
     background: none;
     border: 1px solid rgba(100, 108, 255, 0.3);
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
     color: #ffffff;
-    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
 }
 
-.calendar-header button:hover {
+.month-nav:hover {
     background-color: rgba(100, 108, 255, 0.2);
     border-color: #646cff;
 }
 
-.calendar-header h2 {
-    color: #646cff;
-    font-size: 24px;
-    margin: 0;
+.arrow {
+    font-size: 18px;
+    line-height: 1;
 }
 
 .weekdays {
@@ -43,37 +55,41 @@
     grid-template-columns: repeat(7, 1fr);
     gap: 8px;
     margin-bottom: 8px;
+    padding: 0 4px;
 }
 
 .weekday {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
     text-align: center;
     padding: 8px;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
 }
 
-.calendar-days {
+.calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 8px;
+    padding: 4px;
 }
 
 .calendar-day {
-    background-color: rgba(34, 34, 34, 0.5);
+    aspect-ratio: 1;
+    background-color: rgba(34, 34, 34, 0.6);
     border: 1px solid rgba(100, 108, 255, 0.1);
-    border-radius: 8px;
-    padding: 12px 8px;
-    min-height: 80px;
+    border-radius: 12px;
+    padding: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-height: 100px;
 }
 
-.calendar-day:hover:not(.empty) {
+.calendar-day:not(.empty):hover {
     background-color: rgba(100, 108, 255, 0.1);
     border-color: rgba(100, 108, 255, 0.3);
+    transform: translateY(-2px);
 }
 
 .calendar-day.empty {
@@ -83,31 +99,41 @@
 }
 
 .calendar-day.today {
-    border: 1px solid #646cff;
+    border: 2px solid #646cff;
     background-color: rgba(100, 108, 255, 0.1);
 }
 
-.day-number {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
+.calendar-day.selected {
+    background-color: rgba(100, 108, 255, 0.2);
+    border-color: #646cff;
 }
 
-.day-weather {
+.day-number {
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.weather-info {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s ease;
 }
 
 .weather-icon {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     object-fit: contain;
 }
 
 .temperature {
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 600;
     color: #ffffff;
 }
 
@@ -116,36 +142,71 @@
     color: rgba(255, 255, 255, 0.7);
     text-align: center;
     overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
 }
 
+.has-weather {
+    background-color: rgba(34, 34, 34, 0.8);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Медиа-запросы для адаптивности */
 @media (max-width: 768px) {
     .weather-calendar {
         padding: 16px;
     }
 
+    .calendar-header h2 {
+        font-size: 20px;
+    }
+
     .calendar-day {
-        min-height: 70px;
-        padding: 8px 4px;
+        padding: 4px;
+        min-height: 80px;
     }
 
     .day-number {
-        font-size: 12px;
+        font-size: 14px;
     }
 
     .weather-icon {
-        width: 24px;
-        height: 24px;
+        width: 32px;
+        height: 32px;
     }
 
     .temperature {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .description {
         font-size: 10px;
-        -webkit-line-clamp: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .weekday {
+        font-size: 12px;
+        padding: 4px;
+    }
+
+    .calendar-grid {
+        gap: 4px;
+    }
+
+    .calendar-day {
+        border-radius: 8px;
+        min-height: 60px;
     }
 } 

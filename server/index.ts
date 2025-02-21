@@ -18,26 +18,36 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Базовые middleware для безопасности
-app.use(helmet()); // Защита заголовков
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false
+})); // Защита заголовков
+
+// Настройка CORS
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
         ? process.env.FRONTEND_URL 
-        : 'http://localhost:5173',
-    methods: ['GET'],
-    credentials: true
+        : ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
+    methods: ['GET', 'OPTIONS'],
+    credentials: true,
+    optionsSuccessStatus: 200
 }));
 
-// Ограничение количества запросов
+app.options('*', cors());
+
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 минут
-    max: 100, // максимум 100 запросов с одного IP
-    message: { error: 'Слишком много запросов, попробуйте позже' }
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { error: 'Слишком много запросов, попробуйте позже' },
+    standardHeaders: true,
+    legacyHeaders: false
 });
-app.use(limiter);
+
+app.use('/weather', limiter);
 
 // Валидация параметров запроса
 const validateCity = (city: string): boolean => {
-    const cityRegex = /^[a-zA-Zа-яА-Я0-9\s,.-]+$/;
+    const cityRegex = /^[a-zA-Zа-яА-ЯёЁ0-9\s,.-]+$/u;
     return cityRegex.test(city) && city.length < 100;
 };
 
@@ -101,9 +111,11 @@ interface MoonInfluences {
 // Типизированный обработчик маршрута
 const getWeather = async (req: Request<{ city: string }>, res: Response): Promise<void> => {
     try {
-        const city = decodeURIComponent(req.params.city);
+        const city = decodeURIComponent(req.params.city).trim();
+        console.log(`Получен запрос погоды для города: ${city}`);
         
-        if (!validateCity(city)) {
+        if (!city || !validateCity(city)) {
+            console.log('Некорректное название города:', city);
             res.status(400).json({ 
                 error: 'Некорректное название города' 
             });
@@ -112,35 +124,55 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
 
         const apiKey = process.env.WEATHER_API_KEY;
         if (!apiKey) {
-            console.error('API key not configured');
+            console.error('API key не настроен');
             res.status(500).json({ 
                 error: 'Ошибка конфигурации сервера' 
             });
             return;
         }
 
-        const { data } = await axios.get(
-            'http://api.weatherapi.com/v1/forecast.json',
-            {
-                params: {
-                    key: apiKey,
-                    q: city,
-                    days: 14,
-                    aqi: 'yes',
-                    lang: 'ru'
-                },
-                timeout: 5000,
-                headers: {
-                    'User-Agent': 'Weather App'
-                }
-            }
-        );
+        console.log('Отправка запроса к API погоды...');
+        const apiUrl = 'https://api.weatherapi.com/v1/forecast.json';
+        const params = {
+            key: apiKey,
+            q: city,
+            days: 14,
+            aqi: 'yes',
+            lang: 'ru'
+        };
+        
+        console.log(`Запрос к API: ${apiUrl}`);
+        console.log('Параметры запроса:', { ...params, key: '***' });
 
-        if (!data || !data.current || !data.forecast?.forecastday?.[0]) {
-            throw new Error('Invalid API response structure');
+        const response = await axios.get(apiUrl, {
+            params,
+            timeout: 10000,
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'Weather App/1.0',
+                'Accept-Language': 'ru'
+            }
+        });
+
+        console.log('Получен ответ от API, статус:', response.status);
+        const data = response.data;
+
+        if (!data) {
+            console.error('Пустой ответ от API');
+            throw new Error('Empty API response');
         }
 
-        // Получаем почасовые температуры для графика
+        if (!data.current) {
+            console.error('Отсутствуют текущие данные в ответе API');
+            throw new Error('No current weather data in API response');
+        }
+
+        if (!data.forecast?.forecastday?.[0]) {
+            console.error('Отсутствует прогноз в ответе API');
+            throw new Error('No forecast data in API response');
+        }
+
+        console.log('Данные успешно получены, обработка...');
         const hourlyTemperatures = data.forecast.forecastday[0].hour.map(
             (hour: { temp_c: number }) => hour.temp_c
         );
@@ -177,7 +209,7 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
             icon: day.day.condition.icon
         }));
 
-        const response: WeatherData = {
+        const weatherResponse: WeatherData = {
             temperature: data.current.temp_c.toString(),
             description: sanitizeText(data.current.condition.text),
             feelsLike: data.current.feelslike_c.toString(),
@@ -211,27 +243,36 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
             monthData
         };
 
-        res.json(response);
+        console.log('Отправка ответа клиенту');
+        res.json(weatherResponse);
     } catch (error: any) {
-        console.error('Error fetching weather data:', error);
+        console.error('Ошибка при получении данных о погоде:', error);
+        console.error('Детали ошибки:', {
+            message: error.message,
+            status: error.response?.status,
+            data: error.response?.data,
+            code: error.code
+        });
         
         if (error.response?.status === 404) {
             res.status(404).json({ 
-                error: 'Город не найден' 
+                error: 'Город не найден',
+                details: error.response.data?.error?.message || 'Город не найден в базе данных погодного сервиса'
             });
             return;
         }
         
         if (error.code === 'ECONNABORTED') {
             res.status(408).json({
-                error: 'Превышено время ожидания запроса'
+                error: 'Превышено время ожидания запроса к погодному сервису'
             });
             return;
         }
 
-        if (error.message === 'Invalid API response structure') {
+        if (error.message.includes('API response')) {
             res.status(502).json({
-                error: 'Некорректный ответ от погодного сервиса'
+                error: 'Некорректный ответ от погодного сервиса',
+                details: error.message
             });
             return;
         }
@@ -266,9 +307,25 @@ function getMagneticFieldStatus(): string {
 
 // Обработка ошибок
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
+    console.error('Ошибка сервера:', err);
+    
+    if (err instanceof SyntaxError) {
+        res.status(400).json({ 
+            error: 'Некорректный запрос' 
+        });
+        return;
+    }
+    
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).json({ 
+            error: 'Неавторизованный запрос' 
+        });
+        return;
+    }
+    
     res.status(500).json({ 
-        error: 'Что-то пошло не так' 
+        error: 'Внутренняя ошибка сервера',
+        details: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
 });
 

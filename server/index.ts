@@ -11,19 +11,19 @@ import { dirname, resolve } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-
+// Загружаем переменные окружения
 dotenv.config({ path: resolve(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
+// Базовые middleware для безопасности
 app.use(helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false
-}));
+})); // Защита заголовков
 
-
+// Настройка CORS
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
         ? process.env.FRONTEND_URL 
@@ -45,7 +45,7 @@ const limiter = rateLimit({
 
 app.use('/weather', limiter);
 
-
+// Валидация параметров запроса
 const validateCity = (city: string): boolean => {
     const cityRegex = /^[a-zA-Zа-яА-ЯёЁ0-9\s,.-]+$/u;
     return cityRegex.test(city) && city.length < 100;
@@ -108,7 +108,7 @@ interface MoonInfluences {
     'Waning Crescent': string;
 }
 
-
+// Типизированный обработчик маршрута
 const getWeather = async (req: Request<{ city: string }>, res: Response): Promise<void> => {
     try {
         const city = decodeURIComponent(req.params.city).trim();
@@ -162,23 +162,23 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
             throw new Error('Empty API response');
         }
 
-        if (!data.current) {
-            console.error('Отсутствуют текущие данные в ответе API');
-            throw new Error('No current weather data in API response');
+        const current = data.current;
+        const forecast = data.forecast;
+        const location = data.location;
+
+        if (!current || !forecast || !location) {
+            console.error('Отсутствуют необходимые данные в ответе API');
+            throw new Error('Invalid API response structure');
         }
 
-        if (!data.forecast?.forecastday?.[0]) {
-            console.error('Отсутствует прогноз в ответе API');
-            throw new Error('No forecast data in API response');
-        }
-
-        console.log('Данные успешно получены, обработка...');
-        const hourlyTemperatures = data.forecast.forecastday[0].hour.map(
-            (hour: { temp_c: number }) => hour.temp_c
+        // Получаем почасовые температуры
+        const hourlyTemperatures = forecast.forecastday[0].hour.map(
+            (hour: any) => hour.temp_c
         );
 
-        const sunrise = data.forecast.forecastday[0].astro.sunrise;
-        const sunset = data.forecast.forecastday[0].astro.sunset;
+        // Рассчитываем продолжительность светового дня
+        const sunrise = forecast.forecastday[0].astro.sunrise;
+        const sunset = forecast.forecastday[0].astro.sunset;
         
         const getMinutes = (timeStr: string): number => {
             const [time, period] = timeStr.split(' ');
@@ -196,51 +196,70 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
         
         const daylightDuration = `${Math.floor(daylightMinutes / 60)} ч ${daylightMinutes % 60} мин`;
 
-        const sanitizeText = (text: string): string => sanitize(text, {
-            allowedTags: [],
-            allowedAttributes: {}
-        });
-
-        // Получаем данные о погоде на месяц
-        const monthData = data.forecast.forecastday.map((day: any) => ({
-            date: day.date,
-            temperature: day.day.avgtemp_c,
-            description: sanitizeText(day.day.condition.text),
-            icon: day.day.condition.icon
-        }));
-
-        const weatherResponse: WeatherData = {
-            temperature: data.current.temp_c.toString(),
-            description: sanitizeText(data.current.condition.text),
-            feelsLike: data.current.feelslike_c.toString(),
-            wind: data.current.wind_kph.toString(),
-            humidity: data.current.humidity.toString(),
-            pressure: data.current.pressure_mb.toString(),
-            forecast: data.forecast.forecastday.map((day: any) => ({
-                day: sanitizeText(new Date(day.date).toLocaleDateString('ru-RU', { weekday: 'long' })),
-                temp: `${day.day.maxtemp_c}°C`,
-                date: sanitizeText(new Date(day.date).toLocaleDateString('ru-RU')),
-                condition: sanitizeText(day.day.condition.text)
-            })),
-            airQuality: {
-                co: Number(data.current.air_quality.co.toFixed(2)),
-                no2: Number(data.current.air_quality.no2.toFixed(2)),
-                o3: Number(data.current.air_quality.o3.toFixed(2)),
-                so2: Number(data.current.air_quality.so2.toFixed(2)),
-                pm2_5: Number(data.current.air_quality.pm2_5.toFixed(2)),
-                pm10: Number(data.current.air_quality.pm10.toFixed(2))
+        // Преобразуем данные в формат OpenWeatherMap для совместимости с фронтендом
+        const weatherResponse = {
+            coord: {
+                lon: location.lon,
+                lat: location.lat
             },
-            uvIndex: data.current.uv,
-            maxUvTime: data.forecast.forecastday[0].astro.sun_hour_max,
-            moonPhase: data.forecast.forecastday[0].astro.moon_phase,
-            moonInfluence: getMoonInfluence(data.forecast.forecastday[0].astro.moon_phase as MoonPhase),
-            magneticField: getMagneticFieldStatus(),
-            precipitationChance: data.forecast.forecastday[0].day.daily_chance_of_rain,
-            hourlyTemperatures,
-            sunrise,
-            sunset,
-            daylightDuration,
-            monthData
+            weather: [{
+                id: current.condition.code,
+                main: current.condition.text,
+                description: current.condition.text,
+                icon: current.condition.icon
+            }],
+            base: 'stations',
+            main: {
+                temp: current.temp_c,
+                feels_like: current.feelslike_c,
+                temp_min: forecast.forecastday[0].day.mintemp_c,
+                temp_max: forecast.forecastday[0].day.maxtemp_c,
+                pressure: current.pressure_mb,
+                humidity: current.humidity
+            },
+            visibility: current.vis_km * 1000,
+            wind: {
+                speed: current.wind_kph,
+                deg: current.wind_degree
+            },
+            clouds: {
+                all: current.cloud
+            },
+            dt: current.last_updated_epoch,
+            sys: {
+                type: 1,
+                id: 1,
+                country: location.country,
+                sunrise: Math.floor(new Date(forecast.forecastday[0].date + ' ' + sunrise).getTime() / 1000),
+                sunset: Math.floor(new Date(forecast.forecastday[0].date + ' ' + sunset).getTime() / 1000)
+            },
+            timezone: location.timezone,
+            id: location.id || 0,
+            name: location.name,
+            cod: 200,
+            // Дополнительные данные для нашего приложения
+            forecast: forecast.forecastday.map((day: any) => ({
+                day: new Date(day.date).toLocaleDateString('ru-RU', { weekday: 'long' }),
+                temp: day.day.avgtemp_c.toString(),
+                date: new Date(day.date).toLocaleDateString('ru-RU'),
+                condition: day.day.condition.text
+            })),
+            air_quality: {
+                co: current.air_quality.co,
+                no2: current.air_quality.no2,
+                o3: current.air_quality.o3,
+                so2: current.air_quality.so2,
+                pm2_5: current.air_quality.pm2_5,
+                pm10: current.air_quality.pm10
+            },
+            uv: current.uv,
+            max_uv_time: forecast.forecastday[0].astro.sun_hour_max,
+            moon_phase: forecast.forecastday[0].astro.moon_phase,
+            moon_influence: getMoonInfluence(forecast.forecastday[0].astro.moon_phase as MoonPhase),
+            magnetic_field: getMagneticFieldStatus(),
+            precipitation_chance: forecast.forecastday[0].day.daily_chance_of_rain,
+            hourly_temperatures: hourlyTemperatures,
+            daylight_duration: daylightDuration
         };
 
         console.log('Отправка ответа клиенту');

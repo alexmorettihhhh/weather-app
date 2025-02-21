@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Weather.css';
 import weatherLogo from '../assets/image.png';
@@ -10,7 +10,64 @@ import WeatherWidgets from '../Components/WeatherWidgets';
 import WeatherCalendar from '../Components/WeatherCalendar';
 import SearchSuggestions from '../Components/SearchSuggestions';
 import AnimatedWeather from '../Components/AnimatedWeather';
-import { WeatherData as ApiWeatherData, DayWeather as ApiDayWeather } from '../types/weather';
+import { WeatherData as ApiWeatherData } from '../types/weather';
+
+interface DayWeather {
+    date: string;
+    temperature: number;
+    description: string;
+    icon: string;
+}
+
+interface Forecast {
+    date: string;
+    temp: string;
+    condition: string;
+    day: string;
+}
+
+interface AirQuality {
+    co: number;
+    no2: number;
+    o3: number;
+    so2: number;
+    pm2_5: number;
+    pm10: number;
+}
+
+interface WeatherData {
+    temperature: string;
+    description: string;
+    feelsLike: string;
+    wind: string;
+    humidity: string;
+    pressure: string;
+    forecast: Forecast[];
+    airQuality: AirQuality;
+    uvIndex: number;
+    maxUvTime: string;
+    moonPhase: string;
+    moonInfluence: string;
+    magneticField: string;
+    precipitationChance: number;
+    hourlyTemperatures: number[];
+    sunrise: string;
+    sunset: string;
+    daylightDuration: string;
+    weather?: ApiWeatherData['weather'];
+    sys?: ApiWeatherData['sys'];
+    main?: ApiWeatherData['main'];
+}
+
+interface FetchError extends Error {
+    response?: {
+        data?: {
+            error?: string;
+            details?: string;
+        };
+    };
+    code?: string;
+}
 
 const CITIES_LIST = `Абаза
 Абакан
@@ -1103,48 +1160,6 @@ const CITIES_LIST = `Абаза
 Ясный
 Яхрома`;
 
-interface Forecast {
-    day: string;
-    temp: string;
-    date: string;
-    condition: string;
-}
-
-interface AirQuality {
-    co: number;
-    no2: number;
-    o3: number;
-    so2: number;
-    pm2_5: number;
-    pm10: number;
-}
-
-interface WeatherData {
-    temperature: string;
-    description: string;
-    feelsLike: string;
-    wind: string;
-    humidity: string;
-    pressure: string;
-    forecast: Forecast[];
-    airQuality: AirQuality;
-    uvIndex: number;
-    maxUvTime: string;
-    moonPhase: string;
-    moonInfluence: string;
-    magneticField: string;
-    precipitationChance: number;
-    hourlyTemperatures: number[];
-    sunrise: string;
-    sunset: string;
-    daylightDuration: string;
-    weather?: ApiWeatherData['weather'];
-    sys?: ApiWeatherData['sys'];
-    main?: ApiWeatherData['main'];
-}
-
-type DayWeather = ApiDayWeather;
-
 const roundTemperature = (temp: number): string => {
     const rounded = Math.abs(temp % 1) >= 0.5 ? 
         Math.sign(temp) * Math.ceil(Math.abs(temp)) : 
@@ -1153,8 +1168,8 @@ const roundTemperature = (temp: number): string => {
 };
 
 const validateSearchTerm = (term: string): boolean => {
-    const searchRegex = /^[a-zA-Zа-яА-Я0-9\s,.-]+$/;
-    return searchRegex.test(term) && term.length < 100;
+    const sanitizedTerm = term.trim();
+    return sanitizedTerm.length > 0 && sanitizedTerm.length < 100;
 };
 
 const sanitizeString = (str: string): string => {
@@ -1170,14 +1185,9 @@ const Weather: React.FC = () => {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isCelsius, setIsCelsius] = useState(true);
     const [monthData, setMonthData] = useState<DayWeather[]>([]);
-    const [cities, setCities] = useState<string[]>([]);
+    const [cities] = useState<string[]>(CITIES_LIST.split('\n').filter(city => city.trim() !== ''));
     const [isDay, setIsDay] = useState(true);
-
-    useEffect(() => {
-        // Инициализируем список городов
-        const citiesList = CITIES_LIST.split('\n').filter(city => city.trim() !== '');
-        setCities(citiesList);
-    }, []);
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
     const filterCities = (input: string) => {
         const filtered = cities
@@ -1191,7 +1201,7 @@ const Weather: React.FC = () => {
     const fetchWeather = async (city: string) => {
         try {
             if (!validateSearchTerm(city)) {
-                setError('Некорректное название города');
+                setError('Пожалуйста, введите корректное название города');
                 setIsLoading(false);
                 return;
             }
@@ -1200,33 +1210,59 @@ const Weather: React.FC = () => {
             setError(null);
 
             const sanitizedCity = encodeURIComponent(sanitizeString(city));
-            console.log('Отправка запроса погоды для города:', sanitizedCity);
-            
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/weather/${sanitizedCity}`, {
-                timeout: 10000,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
-
-            console.log('Получен ответ:', response.status);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/weather/${sanitizedCity}`);
 
             if (!response.data) {
                 throw new Error('Пустой ответ от сервера');
             }
 
-            setWeatherData(response.data);
-            setError(null);
-        } catch (error: any) {
-            console.error('Ошибка при получении погоды:', error);
+            const apiData = response.data;
             
-            if (error.response) {
-                const errorMessage = error.response.data?.error || 'Неизвестная ошибка';
-                const errorDetails = error.response.data?.details;
+            // Преобразуем данные API в формат нашего приложения
+            const transformedData: WeatherData = {
+                temperature: apiData.main.temp.toString(),
+                description: apiData.weather[0].description,
+                feelsLike: apiData.main.feels_like.toString(),
+                wind: apiData.wind.speed.toString(),
+                humidity: apiData.main.humidity.toString(),
+                pressure: apiData.main.pressure.toString(),
+                forecast: apiData.forecast || [],
+                airQuality: apiData.air_quality || {
+                    co: 0,
+                    no2: 0,
+                    o3: 0,
+                    so2: 0,
+                    pm2_5: 0,
+                    pm10: 0
+                },
+                uvIndex: apiData.uv || 0,
+                maxUvTime: apiData.max_uv_time || '',
+                moonPhase: apiData.moon_phase || 'Не определена',
+                moonInfluence: apiData.moon_influence || '',
+                magneticField: apiData.magnetic_field || 'Спокойное',
+                precipitationChance: apiData.precipitation_chance || 0,
+                hourlyTemperatures: apiData.hourly_temperatures || Array(24).fill(apiData.main.temp),
+                sunrise: apiData.sys.sunrise ? new Date(apiData.sys.sunrise * 1000).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '',
+                sunset: apiData.sys.sunset ? new Date(apiData.sys.sunset * 1000).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '',
+                daylightDuration: apiData.daylight_duration || 'Не определено',
+                weather: apiData.weather,
+                sys: apiData.sys,
+                main: apiData.main
+            };
+
+            setWeatherData(transformedData);
+            setError(null);
+        } catch (error: unknown) {
+            const fetchError = error as FetchError;
+            console.error('Ошибка при получении погоды:', fetchError);
+            
+            if (fetchError.response) {
+                const errorMessage = fetchError.response.data?.error || 'Неизвестная ошибка';
+                const errorDetails = fetchError.response.data?.details;
                 setError(errorDetails ? `${errorMessage}: ${errorDetails}` : errorMessage);
-            } else if (error.code === 'ECONNABORTED') {
+            } else if (fetchError.code === 'ECONNABORTED') {
                 setError('Превышено время ожидания запроса. Пожалуйста, попробуйте снова.');
-            } else if (error.message === 'Network Error') {
+            } else if (fetchError.message === 'Network Error') {
                 setError('Ошибка сети. Проверьте подключение к интернету.');
             } else {
                 setError('Не удалось получить данные о погоде. Пожалуйста, попробуйте позже.');
@@ -1244,8 +1280,7 @@ const Weather: React.FC = () => {
 
     useEffect(() => {
         if (weatherData) {
-            // Преобразуем данные прогноза в формат для календаря
-            const calendarData = weatherData.forecast.map(day => ({
+            const calendarData: DayWeather[] = weatherData.forecast.map((day: Forecast) => ({
                 date: day.date,
                 temperature: parseFloat(day.temp),
                 description: day.condition,
@@ -1259,18 +1294,10 @@ const Weather: React.FC = () => {
     }, [weatherData]);
 
     useEffect(() => {
-        // Определяем день или ночь на основе текущего времени
-        const checkDayTime = () => {
-            if (weatherData?.sys) {
-                const now = Date.now() / 1000; // текущее время в секундах
-                setIsDay(now > weatherData.sys.sunrise && now < weatherData.sys.sunset);
-            }
-        };
-        
-        checkDayTime();
-        const interval = setInterval(checkDayTime, 60000); // проверяем каждую минуту
-        
-        return () => clearInterval(interval);
+        if (weatherData?.sys) {
+            const now = Date.now() / 1000;
+            setIsDay(now > weatherData.sys.sunrise && now < weatherData.sys.sunset);
+        }
     }, [weatherData]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1286,19 +1313,21 @@ const Weather: React.FC = () => {
 
     const handleSuggestionSelect = (city: string) => {
         setSearchTerm(city);
-        setSelectedCity(city);
-        setSuggestions([]);
+        fetchWeather(city);
+        setShowSuggestions(false);
     };
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (searchTerm && validateSearchTerm(searchTerm)) {
-            setSelectedCity(searchTerm);
-            setSearchTerm('');
-            setSuggestions([]);
-        } else {
-            setError('Некорректное название города');
+        if (!searchTerm) return;
+        
+        if (!validateSearchTerm(searchTerm)) {
+            setError('Пожалуйста, введите корректное название города');
+            return;
         }
+        
+        fetchWeather(searchTerm);
+        setShowSuggestions(false);
     };
 
     const getLocationWeather = () => {
@@ -1338,17 +1367,43 @@ const Weather: React.FC = () => {
     };
 
     const getWeatherType = (): 'clear' | 'clouds' | 'rain' | 'snow' | 'thunderstorm' => {
-        if (!weatherData || !weatherData.weather || !weatherData.weather[0]) {
-            return 'clear'; // Default fallback
+        if (!weatherData?.weather?.[0]) return 'clear';
+        
+        const weatherId = weatherData.weather[0].id;
+        const description = weatherData.weather[0].description.toLowerCase();
+        
+        // Проверяем снег
+        if ((weatherId >= 600 && weatherId < 700) || description.includes('снег')) {
+            return 'snow';
         }
         
-        const id = weatherData.weather[0].id;
+        // Проверяем грозу
+        if (weatherId >= 200 && weatherId < 300) {
+            return 'thunderstorm';
+        }
         
-        if (id >= 200 && id < 300) return 'thunderstorm';
-        if (id >= 300 && id < 600) return 'rain';
-        if (id >= 600 && id < 700) return 'snow';
-        if (id >= 801) return 'clouds';
+        // Проверяем дождь
+        if ((weatherId >= 300 && weatherId < 600) || 
+            description.includes('дождь') || 
+            description.includes('ливень')) {
+            return 'rain';
+        }
+        
+        // Проверяем облачность
+        if ((weatherId >= 801 && weatherId < 900) || 
+            description.includes('облач') || 
+            description.includes('пасмурно')) {
+            return 'clouds';
+        }
+        
+        // Если ничего не подошло, считаем что ясно
         return 'clear';
+    };
+
+    const checkDayTime = (): boolean => {
+        if (!weatherData?.sys) return true;
+        const now = Math.floor(Date.now() / 1000);
+        return now >= weatherData.sys.sunrise && now <= weatherData.sys.sunset;
     };
 
     return (
@@ -1356,7 +1411,7 @@ const Weather: React.FC = () => {
             <AnimatedWeather 
                 weatherType={getWeatherType()}
                 temperature={weatherData?.main?.temp || 0}
-                isDay={isDay}
+                isDay={checkDayTime()}
             />
             <nav className="weather-nav">
                 <div className="nav-content">

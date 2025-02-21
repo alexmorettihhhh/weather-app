@@ -4,7 +4,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
+    z-index: 0;
+    pointer-events: none;
     overflow: hidden;
 }
 
@@ -14,6 +15,7 @@
     left: 0;
     width: 100%;
     height: 100%;
+    z-index: 1;
 }
 
 .weather-overlay {
@@ -22,80 +24,221 @@
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
+    z-index: 0;
+    transition: background 2s ease;
 }
 
-/* Дневные стили */
-.animated-weather.day {
-    background: linear-gradient(to bottom, #87CEEB, #B0E0E6);
+/* Day/Night backgrounds with improved gradients */
+.day .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #87CEEB 0%, 
+        #B0E0E6 50%, 
+        #87CEEB 100%
+    );
 }
 
-.animated-weather.day.clear {
-    background: linear-gradient(to bottom, #4A90E2, #87CEEB);
+.night .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #1a1a2e 0%, 
+        #16213e 50%, 
+        #1a1a2e 100%
+    );
 }
 
-.animated-weather.day.clouds {
-    background: linear-gradient(to bottom, #7B8EA8, #B0C4DE);
+/* Weather-specific overlays with enhanced gradients */
+.clear.day .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #87CEEB 0%, 
+        #B0E0E6 50%, 
+        #87CEEB 100%
+    );
 }
 
-.animated-weather.day.rain {
-    background: linear-gradient(to bottom, #4A5D7B, #708090);
+.clear.night .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #1a1a2e 0%, 
+        #16213e 50%, 
+        #1a1a2e 100%
+    );
 }
 
-.animated-weather.day.snow {
-    background: linear-gradient(to bottom, #B0C4DE, #E0FFFF);
+.clouds.day .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #a8c0d3 0%, 
+        #d4d4d4 50%, 
+        #a8c0d3 100%
+    );
 }
 
-.animated-weather.day.thunderstorm {
-    background: linear-gradient(to bottom, #2C3E50, #34495E);
+.clouds.night .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #2c3e50 0%, 
+        #34495e 50%, 
+        #2c3e50 100%
+    );
 }
 
-/* Ночные стили */
-.animated-weather.night {
-    background: linear-gradient(to bottom, #1a1a2e, #16213E);
+.rain.day .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #4a6fa5 0%, 
+        #6c8eb3 50%, 
+        #4a6fa5 100%
+    );
 }
 
-.animated-weather.night.clear {
-    background: linear-gradient(to bottom, #0F2027, #203A43);
+.rain.night .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #1f2937 0%, 
+        #374151 50%, 
+        #1f2937 100%
+    );
 }
 
-.animated-weather.night.clouds {
-    background: linear-gradient(to bottom, #2C3E50, #3D556E);
+.snow.day .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #e5e7eb 0%, 
+        #f3f4f6 50%, 
+        #e5e7eb 100%
+    );
 }
 
-.animated-weather.night.rain {
-    background: linear-gradient(to bottom, #1F2937, #374151);
+.snow.night .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #1f2937 0%, 
+        #374151 50%, 
+        #1f2937 100%
+    );
 }
 
-.animated-weather.night.snow {
-    background: linear-gradient(to bottom, #2C3E50, #2F4F4F);
+.thunderstorm.day .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #1f2937 0%, 
+        #374151 50%, 
+        #1f2937 100%
+    );
 }
 
-.animated-weather.night.thunderstorm {
-    background: linear-gradient(to bottom, #111827, #1F2937);
+.thunderstorm.night .weather-overlay {
+    background: linear-gradient(to bottom, 
+        #111827 0%, 
+        #1f2937 50%, 
+        #111827 100%
+    );
 }
 
-/* Анимации для грозовых фронтов */
+/* Day Cycle */
+.day-cycle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 150px;
+    overflow: hidden;
+    z-index: 2;
+}
+
+.sun-moon-path {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    margin-left: -100px;
+    transform-origin: 50% 0;
+    transition: transform 2s ease;
+}
+
+.celestial-body {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin-left: -20px;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    transition: all 2s ease;
+}
+
+.sun {
+    background: radial-gradient(circle at center, 
+        #FFD700 0%, 
+        #FFA500 70%, 
+        rgba(255, 165, 0, 0) 100%
+    );
+    box-shadow: 
+        0 0 20px #FFD700,
+        0 0 40px rgba(255, 165, 0, 0.5);
+    animation: glow 4s infinite alternate;
+}
+
+.moon {
+    background: radial-gradient(circle at 30% 30%, 
+        #FFFFFF 0%, 
+        #F0F0F0 70%,
+        rgba(240, 240, 240, 0) 100%
+    );
+    box-shadow: 
+        0 0 15px rgba(255, 255, 255, 0.5),
+        0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+.time-marks {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 
+            0 0 20px #FFD700,
+            0 0 40px rgba(255, 165, 0, 0.5);
+    }
+    to {
+        box-shadow: 
+            0 0 30px #FFD700,
+            0 0 60px rgba(255, 165, 0, 0.7);
+    }
+}
+
+/* Animation for thunderstorm flash */
 @keyframes thunderFlash {
     0% { opacity: 0; }
     10% { opacity: 1; }
     20% { opacity: 0; }
     30% { opacity: 1; }
-    40% { opacity: 0; }
-    100% { opacity: 0; }
+    40%, 100% { opacity: 0; }
 }
 
-.thunder-flash {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    opacity: 0;
-    pointer-events: none;
-}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .day-cycle {
+        width: 200px;
+        height: 100px;
+    }
 
-.animated-weather.thunderstorm .thunder-flash {
-    animation: thunderFlash 6s infinite;
+    .sun-moon-path {
+        width: 150px;
+        height: 150px;
+        margin-left: -75px;
+    }
+
+    .celestial-body {
+        width: 30px;
+        height: 30px;
+        margin-left: -15px;
+    }
+
+    .time-marks {
+        font-size: 10px;
+        padding: 0 15px;
+    }
 } 

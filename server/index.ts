@@ -11,19 +11,19 @@ import { dirname, resolve } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Загружаем переменные окружения
+
 dotenv.config({ path: resolve(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Базовые middleware для безопасности
+
 app.use(helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false
-})); // Защита заголовков
+}));
 
-// Настройка CORS
+
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
         ? process.env.FRONTEND_URL 
@@ -45,7 +45,7 @@ const limiter = rateLimit({
 
 app.use('/weather', limiter);
 
-// Валидация параметров запроса
+
 const validateCity = (city: string): boolean => {
     const cityRegex = /^[a-zA-Zа-яА-ЯёЁ0-9\s,.-]+$/u;
     return cityRegex.test(city) && city.length < 100;
@@ -108,7 +108,7 @@ interface MoonInfluences {
     'Waning Crescent': string;
 }
 
-// Типизированный обработчик маршрута
+
 const getWeather = async (req: Request<{ city: string }>, res: Response): Promise<void> => {
     try {
         const city = decodeURIComponent(req.params.city).trim();

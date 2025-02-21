@@ -11,19 +11,18 @@ import { dirname, resolve } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Загружаем переменные окружения
+
 dotenv.config({ path: resolve(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Базовые middleware для безопасности
+
 app.use(helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false
-})); // Защита заголовков
+}));
 
-// Настройка CORS
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
         ? process.env.FRONTEND_URL 
@@ -45,7 +44,6 @@ const limiter = rateLimit({
 
 app.use('/weather', limiter);
 
-// Валидация параметров запроса
 const validateCity = (city: string): boolean => {
     const cityRegex = /^[a-zA-Zа-яА-ЯёЁ0-9\s,.-]+$/u;
     return cityRegex.test(city) && city.length < 100;
@@ -108,7 +106,7 @@ interface MoonInfluences {
     'Waning Crescent': string;
 }
 
-// Типизированный обработчик маршрута
+
 const getWeather = async (req: Request<{ city: string }>, res: Response): Promise<void> => {
     try {
         const city = decodeURIComponent(req.params.city).trim();
@@ -171,12 +169,12 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
             throw new Error('Invalid API response structure');
         }
 
-        // Получаем почасовые температуры
+        
         const hourlyTemperatures = forecast.forecastday[0].hour.map(
             (hour: any) => hour.temp_c
         );
 
-        // Рассчитываем продолжительность светового дня
+        
         const sunrise = forecast.forecastday[0].astro.sunrise;
         const sunset = forecast.forecastday[0].astro.sunset;
         
@@ -303,7 +301,7 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
     }
 };
 
-// Регистрируем маршрут
+
 app.get('/weather/:city', getWeather);
 
 function getMoonInfluence(moonPhase: MoonPhase): string {
@@ -324,7 +322,7 @@ function getMagneticFieldStatus(): string {
     return 'Спокойное';
 }
 
-// Обработка ошибок
+
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error('Ошибка сервера:', err);
     

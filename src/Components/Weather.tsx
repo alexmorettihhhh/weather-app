@@ -1,16 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import axios from 'axios';
 import './Weather.css';
 import weatherLogo from '../assets/image.png';
 import Daylight from '../Components/Daylight';
-import TemperatureChart from '../Components/TemperatureChart';
-import WeatherRecommendations from '../Components/WeatherRecommendations';
-import ExtendedWeatherData from '../Components/ExtendedWeatherData';
-import WeatherWidgets from '../Components/WeatherWidgets';
-import WeatherCalendar from '../Components/WeatherCalendar';
 import SearchSuggestions from '../Components/SearchSuggestions';
 import AnimatedWeather from '../Components/AnimatedWeather';
 import { WeatherData as ApiWeatherData } from '../types/weather';
+import type { MoonPhase } from '../Components/WeatherWidgets';
+import weatherRecommendations from '../Components/WeatherRecommendations';
+import extendedWeatherData from '../Components/ExtendedWeatherData';
+import weatherWidgets from '../Components/WeatherWidgets';
+import weatherCalendar from '../Components/WeatherCalendar';
+import weatherEducation from './WeatherEducation';
+
+// Ленивая загрузка тяжелых компонентов
+const TemperatureChart = lazy(() => import('../Components/TemperatureChart'));
+const WeatherRecommendations = lazy(() => import('../Components/WeatherRecommendations'));
+const ExtendedWeatherData = lazy(() => import('../Components/ExtendedWeatherData'));
+const WeatherWidgets = lazy(() => import('../Components/WeatherWidgets'));
+const WeatherCalendar = lazy(() => import('../Components/WeatherCalendar'));
+const WeatherEducation = lazy(() => import('./WeatherEducation'));
 
 interface DayWeather {
     date: string;
@@ -57,6 +66,7 @@ interface WeatherData {
     weather?: ApiWeatherData['weather'];
     sys?: ApiWeatherData['sys'];
     main?: ApiWeatherData['main'];
+    name: string;
 }
 
 interface FetchError extends Error {
@@ -1195,7 +1205,7 @@ const Weather: React.FC = () => {
                 city.toLowerCase().startsWith(input.toLowerCase())
             )
             .slice(0, 10); // Ограничиваем количество подсказок
-        setSuggestions(filtered);
+        return filtered;
     };
 
     const fetchWeather = async (city: string) => {
@@ -1247,7 +1257,8 @@ const Weather: React.FC = () => {
                 daylightDuration: apiData.daylight_duration || 'Не определено',
                 weather: apiData.weather,
                 sys: apiData.sys,
-                main: apiData.main
+                main: apiData.main,
+                name: apiData.name
             };
 
             setWeatherData(transformedData);
@@ -1305,29 +1316,28 @@ const Weather: React.FC = () => {
         setSearchTerm(value);
         
         if (value.length >= 2) {
-            filterCities(value);
+            const filtered = filterCities(value);
+            setSuggestions(filtered);
+            setShowSuggestions(true);
         } else {
             setSuggestions([]);
+            setShowSuggestions(false);
         }
     };
 
     const handleSuggestionSelect = (city: string) => {
         setSearchTerm(city);
-        fetchWeather(city);
+        setSuggestions([]);
         setShowSuggestions(false);
+        fetchWeather(city);
     };
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!searchTerm) return;
-        
-        if (!validateSearchTerm(searchTerm)) {
-            setError('Пожалуйста, введите корректное название города');
-            return;
+        if (searchTerm.trim()) {
+            setShowSuggestions(false);
+            fetchWeather(searchTerm);
         }
-        
-        fetchWeather(searchTerm);
-        setShowSuggestions(false);
     };
 
     const getLocationWeather = () => {
@@ -1406,6 +1416,21 @@ const Weather: React.FC = () => {
         return now >= weatherData.sys.sunrise && now <= weatherData.sys.sunset;
     };
 
+    // Add click outside handler
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.weather-search')) {
+                setShowSuggestions(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
+
     return (
         <div className="weather-container">
             <AnimatedWeather 
@@ -1425,6 +1450,7 @@ const Weather: React.FC = () => {
                                 placeholder="Введите город"
                                 value={searchTerm}
                                 onChange={handleSearch}
+                                onFocus={() => setShowSuggestions(true)}
                             />
                             <button type="submit">ПОИСК</button>
                         </form>
@@ -1434,6 +1460,7 @@ const Weather: React.FC = () => {
                         <SearchSuggestions 
                             suggestions={suggestions}
                             onSelect={handleSuggestionSelect}
+                            isVisible={showSuggestions}
                         />
                     </div>
                 </div>
@@ -1445,12 +1472,12 @@ const Weather: React.FC = () => {
                 ) : isLoading ? (
                     <div className="loading">Загрузка...</div>
                 ) : weatherData ? (
-                    <>
+                    <Suspense fallback={<div className="loading">Загрузка компонентов...</div>}>
                         <div className="weather-content">
                             <div className="weather-main">
                                 <div className="weather-current">
                                     <div className="weather-info">
-                                        <span className="city-name">Погода в {selectedCity}</span>
+                                        <span className="city-name">Погода в {weatherData.name}</span>
                                         <div className="temperature-block">
                                             <span className="temperature">{getTemperature(weatherData.temperature)}°</span>
                                             <div className="unit-toggle">
@@ -1571,7 +1598,7 @@ const Weather: React.FC = () => {
                         <WeatherWidgets 
                             sunrise={weatherData.sunrise}
                             sunset={weatherData.sunset}
-                            moonPhase={weatherData.moonPhase}
+                            moonPhase={weatherData.moonPhase as MoonPhase}
                             windDirection={45}
                             temperature={parseFloat(weatherData.temperature)}
                         />
@@ -1597,7 +1624,9 @@ const Weather: React.FC = () => {
                             monthData={monthData}
                             onDayClick={handleDayClick}
                         />
-                    </>
+
+                        <WeatherEducation />
+                    </Suspense>
                 ) : null}
             </div>
         </div>

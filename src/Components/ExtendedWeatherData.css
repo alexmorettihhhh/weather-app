@@ -2,22 +2,26 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
-    background-color: #1a1a1a;
+    background-color: #000000;
     border-radius: 12px;
     padding: 24px;
     margin: 24px 0;
     color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .data-section {
-    background-color: #222;
+    background-color: #000000;
     border-radius: 8px;
     padding: 16px;
     text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     transition: transform 0.2s ease;
 }
 
 .data-section:hover {
+    border-color: rgba(100, 108, 255, 0.3);
+    background-color: rgba(100, 108, 255, 0.1);
     transform: translateY(-2px);
 }
 

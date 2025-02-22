@@ -23,6 +23,7 @@ app.use(helmet({
     crossOriginEmbedderPolicy: false
 }));
 
+
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
         ? process.env.FRONTEND_URL 
@@ -43,6 +44,7 @@ const limiter = rateLimit({
 });
 
 app.use('/weather', limiter);
+
 
 const validateCity = (city: string): boolean => {
     const cityRegex = /^[a-zA-Zа-яА-ЯёЁ0-9\s,.-]+$/u;
@@ -169,12 +171,10 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
             throw new Error('Invalid API response structure');
         }
 
-        
         const hourlyTemperatures = forecast.forecastday[0].hour.map(
             (hour: any) => hour.temp_c
         );
 
-        
         const sunrise = forecast.forecastday[0].astro.sunrise;
         const sunset = forecast.forecastday[0].astro.sunset;
         
@@ -194,7 +194,7 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
         
         const daylightDuration = `${Math.floor(daylightMinutes / 60)} ч ${daylightMinutes % 60} мин`;
 
-        // Преобразуем данные в формат OpenWeatherMap для совместимости с фронтендом
+
         const weatherResponse = {
             coord: {
                 lon: location.lon,
@@ -233,7 +233,7 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
             },
             timezone: location.timezone,
             id: location.id || 0,
-            name: location.name,
+            name: city,
             cod: 200,
             // Дополнительные данные для нашего приложения
             forecast: forecast.forecastday.map((day: any) => ({
@@ -301,7 +301,7 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
     }
 };
 
-
+// Регистрируем маршрут
 app.get('/weather/:city', getWeather);
 
 function getMoonInfluence(moonPhase: MoonPhase): string {

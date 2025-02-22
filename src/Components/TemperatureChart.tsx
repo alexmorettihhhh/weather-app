@@ -17,15 +17,15 @@ const TemperatureChart: React.FC<TemperatureChartProps> = ({ temperatures, label
                 label: 'Температура',
                 data: temperatures,
                 fill: false,
-                backgroundColor: '#646cff',
                 borderColor: '#646cff',
                 tension: 0.4,
-                pointBackgroundColor: '#535bf2',
-                pointBorderColor: '#ffffff',
+                pointBackgroundColor: '#646cff',
+                pointBorderColor: '#000000',
                 pointHoverBackgroundColor: '#ffffff',
                 pointHoverBorderColor: '#646cff',
                 pointRadius: 4,
                 pointHoverRadius: 6,
+                borderWidth: 2
             },
         ],
     };
@@ -35,16 +35,10 @@ const TemperatureChart: React.FC<TemperatureChartProps> = ({ temperatures, label
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: 'top' as const,
-                labels: {
-                    color: '#ffffff',
-                    font: {
-                        size: 14
-                    }
-                }
+                display: false
             },
             tooltip: {
-                backgroundColor: '#1a1a1a',
+                backgroundColor: '#000000',
                 titleColor: '#ffffff',
                 bodyColor: '#ffffff',
                 borderColor: '#646cff',
@@ -60,13 +54,12 @@ const TemperatureChart: React.FC<TemperatureChartProps> = ({ temperatures, label
         },
         scales: {
             y: {
-                beginAtZero: false,
                 grid: {
-                    color: 'rgba(255, 255, 255, 0.1)',
+                    color: 'rgba(255, 255, 255, 0.05)',
                     drawBorder: false,
                 },
                 ticks: {
-                    color: '#ffffff',
+                    color: 'rgba(255, 255, 255, 0.7)',
                     font: {
                         size: 12
                     },
@@ -77,11 +70,10 @@ const TemperatureChart: React.FC<TemperatureChartProps> = ({ temperatures, label
             },
             x: {
                 grid: {
-                    color: 'rgba(255, 255, 255, 0.1)',
-                    drawBorder: false,
+                    display: false
                 },
                 ticks: {
-                    color: '#ffffff',
+                    color: 'rgba(255, 255, 255, 0.7)',
                     font: {
                         size: 12
                     }
@@ -95,7 +87,7 @@ const TemperatureChart: React.FC<TemperatureChartProps> = ({ temperatures, label
     };
 
     return (
-        <div style={{ height: '400px' }}>
+        <div style={{ height: '400px', padding: '20px 0' }}>
             <Line data={data} options={options} />
         </div>
     );

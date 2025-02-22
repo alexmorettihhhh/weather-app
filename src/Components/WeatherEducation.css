@@ -1,0 +1,305 @@
+.weather-education {
+    background-color: #000000;
+    border: 1px solid rgba(100, 108, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 24px 0;
+    color: #ffffff;
+}
+
+.education-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(100, 108, 255, 0.1);
+}
+
+.tab-button {
+    background: #000000;
+    border: 1px solid rgba(100, 108, 255, 0.2);
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.tab-button:hover {
+    background: rgba(100, 108, 255, 0.1);
+    border-color: rgba(100, 108, 255, 0.4);
+}
+
+.tab-button.active {
+    background: rgba(100, 108, 255, 0.2);
+    border-color: #646cff;
+    color: #646cff;
+    box-shadow: 0 0 15px rgba(100, 108, 255, 0.2);
+}
+
+.education-content {
+    min-height: 400px;
+}
+
+/* Стили для метеорологических явлений */
+.phenomena-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.phenomenon-card {
+    background: #000000;
+    border: 1px solid rgba(100, 108, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.phenomenon-card:hover {
+    border-color: rgba(100, 108, 255, 0.4);
+    background: rgba(100, 108, 255, 0.05);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(100, 108, 255, 0.1);
+}
+
+.phenomenon-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.phenomenon-header h3 {
+    color: #646cff;
+    font-size: 20px;
+    margin: 0;
+}
+
+.phenomenon-icon {
+    font-size: 32px;
+    filter: drop-shadow(0 0 8px rgba(100, 108, 255, 0.3));
+    transition: all 0.3s ease;
+}
+
+.phenomenon-description {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.phenomenon-details {
+    list-style: none;
+    padding: 0;
+}
+
+.phenomenon-details li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(100, 108, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.phenomenon-details li:last-child {
+    border-bottom: none;
+}
+
+.phenomenon-details li::before {
+    content: '•';
+    color: #646cff;
+    margin-right: 8px;
+}
+
+/* Стили для интересных фактов */
+.facts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.fact-card {
+    background: #000000;
+    border: 1px solid rgba(100, 108, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.fact-card:hover {
+    border-color: rgba(100, 108, 255, 0.4);
+    background: rgba(100, 108, 255, 0.05);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(100, 108, 255, 0.1);
+}
+
+.fact-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+    filter: drop-shadow(0 0 8px rgba(100, 108, 255, 0.3));
+    transition: all 0.3s ease;
+}
+
+.fact-card h3 {
+    color: #646cff;
+    margin: 12px 0;
+    font-size: 18px;
+}
+
+.fact-card p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+}
+
+/* Стили для климатических особенностей */
+.climate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.climate-card {
+    background: #000000;
+    border: 1px solid rgba(100, 108, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.climate-card:hover {
+    border-color: rgba(100, 108, 255, 0.4);
+    background: rgba(100, 108, 255, 0.05);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(100, 108, 255, 0.1);
+}
+
+.climate-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.climate-header h3 {
+    color: #646cff;
+    font-size: 20px;
+    margin: 0;
+}
+
+.climate-icon {
+    font-size: 32px;
+    filter: drop-shadow(0 0 8px rgba(100, 108, 255, 0.3));
+    transition: all 0.3s ease;
+}
+
+.climate-description {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.climate-characteristics {
+    list-style: none;
+    padding: 0;
+}
+
+.climate-characteristics li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(100, 108, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.climate-characteristics li:last-child {
+    border-bottom: none;
+}
+
+.climate-characteristics li::before {
+    content: '•';
+    color: #646cff;
+    margin-right: 8px;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .weather-education {
+        padding: 16px;
+        margin: 16px 0;
+    }
+
+    .education-tabs {
+        padding: 8px;
+    }
+
+    .tab-button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .phenomenon-card,
+    .fact-card,
+    .climate-card {
+        padding: 16px;
+    }
+
+    .phenomenon-icon,
+    .climate-icon {
+        font-size: 24px;
+    }
+
+    .fact-icon {
+        font-size: 36px;
+    }
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.phenomenon-card,
+.fact-card,
+.climate-card {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* Стилизация скроллбара */
+.education-tabs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.education-tabs::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+}
+
+.education-tabs::-webkit-scrollbar-thumb {
+    background: rgba(100, 108, 255, 0.3);
+    border-radius: 2px;
+}
+
+.education-tabs::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 108, 255, 0.5);
+}
+
+/* Анимация для иконок */
+.phenomenon-card:hover .phenomenon-icon,
+.fact-card:hover .fact-icon,
+.climate-card:hover .climate-icon {
+    filter: drop-shadow(0 0 12px rgba(100, 108, 255, 0.5));
+    transform: scale(1.1);
+} 

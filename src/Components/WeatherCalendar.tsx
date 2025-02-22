@@ -23,11 +23,23 @@ const WeatherCalendar: React.FC<WeatherCalendarProps> = ({ monthData, onDayClick
     };
 
     const formatDate = (dateStr: string): string => {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('ru-RU', { 
-            day: 'numeric',
-            month: 'short'
-        });
+        try {
+            const [day, month, year] = dateStr.split('.');
+            if (!day || !month || !year) {
+                throw new Error('Invalid date format');
+            }
+            const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            if (isNaN(date.getTime())) {
+                throw new Error('Invalid date');
+            }
+            return date.toLocaleDateString('ru-RU', { 
+                day: 'numeric',
+                month: 'short'
+            });
+        } catch (error) {
+            console.error('Error formatting date:', error);
+            return 'Invalid Date';
+        }
     };
 
     return (

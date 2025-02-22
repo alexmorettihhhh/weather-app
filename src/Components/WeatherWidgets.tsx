@@ -1,10 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import './WeatherWidgets.css';
 
+type MoonPhase = 'New Moon' | 'Waxing Crescent' | 'First Quarter' | 'Waxing Gibbous' | 'Full Moon' | 'Waning Gibbous' | 'Last Quarter' | 'Waning Crescent';
+
+const moonPhaseTranslations: Record<MoonPhase, string> = {
+    'New Moon': 'Новолуние',
+    'Waxing Crescent': 'Молодая луна',
+    'First Quarter': 'Первая четверть',
+    'Waxing Gibbous': 'Прибывающая луна',
+    'Full Moon': 'Полнолуние',
+    'Waning Gibbous': 'Убывающая луна',
+    'Last Quarter': 'Последняя четверть',
+    'Waning Crescent': 'Старая луна'
+};
+
 interface WeatherWidgetsProps {
     sunrise: string;
     sunset: string;
-    moonPhase: string;
+    moonPhase: MoonPhase;
     windDirection: number;
     temperature: number;
 }
@@ -17,14 +30,27 @@ const WeatherWidgets: React.FC<WeatherWidgetsProps> = ({
     temperature
 }) => {
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [sunPosition, setSunPosition] = useState(0);
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
+        const updateTime = () => {
+            const now = new Date();
+            setCurrentTime(now);
+            
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const sunriseMinutes = timeToMinutes(sunrise);
+            const sunsetMinutes = timeToMinutes(sunset);
+            
+            const dayLength = sunsetMinutes - sunriseMinutes;
+            const position = ((currentMinutes - sunriseMinutes) / dayLength) * 100;
+            
+            setSunPosition(Math.max(0, Math.min(100, position)));
+        };
 
+        updateTime();
+        const timer = setInterval(updateTime, 1000);
         return () => clearInterval(timer);
-    }, []);
+    }, [sunrise, sunset]);
 
     const formatTime = (date: Date): string => {
         const hours = date.getHours().toString().padStart(2, '0');
@@ -34,27 +60,25 @@ const WeatherWidgets: React.FC<WeatherWidgetsProps> = ({
     };
 
     const formatSunTime = (timeStr: string): string => {
-        const [time] = timeStr.split(' ');
-        const [hours, minutes] = time.split(':');
-        return `${hours}:${minutes}`;
+        try {
+            const [time] = timeStr.split(' ');
+            const [hours, minutes] = time.split(':');
+            return `${hours}:${minutes}`;
+        } catch (error) {
+            console.error('Error formatting sun time:', error, 'Input:', timeStr);
+            return '00:00';
+        }
     };
 
     const timeToMinutes = (timeStr: string): number => {
-        const [time] = timeStr.split(' ');
-        const [hours, minutes] = time.split(':').map(Number);
-        return hours * 60 + minutes;
-    };
-
-    const getCurrentTimePosition = (): number => {
-        const now = currentTime;
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        const sunriseMinutes = timeToMinutes(sunrise);
-        const sunsetMinutes = timeToMinutes(sunset);
-        
-        const dayLength = sunsetMinutes - sunriseMinutes;
-        const position = ((currentMinutes - sunriseMinutes) / dayLength) * 100;
-        
-        return Math.max(0, Math.min(100, position));
+        try {
+            const [time] = timeStr.split(' ');
+            const [hours, minutes] = time.split(':').map(Number);
+            return hours * 60 + minutes;
+        } catch (error) {
+            console.error('Error converting time to minutes:', error, 'Input:', timeStr);
+            return 0;
+        }
     };
 
     const getMoonPhaseIcon = () => {
@@ -86,7 +110,13 @@ const WeatherWidgets: React.FC<WeatherWidgetsProps> = ({
                 <h3>Солнечные часы</h3>
                 <div className="current-time">{formatTime(currentTime)}</div>
                 <div className="sun-path">
-                    <div className="sun-marker" style={{ left: `${getCurrentTimePosition()}%` }} />
+                    <div 
+                        className="sun-marker" 
+                        style={{ 
+                            left: `${sunPosition}%`,
+                            transition: 'left 0.3s ease-in-out'
+                        }} 
+                    />
                     <div className="time-marks">
                         <span className="sunrise-time">{formatSunTime(sunrise)}</span>
                         <span className="sunset-time">{formatSunTime(sunset)}</span>
@@ -101,19 +131,28 @@ const WeatherWidgets: React.FC<WeatherWidgetsProps> = ({
                         className="moon-icon" 
                         style={{ 
                             backgroundColor: moonPhaseInfo.color,
-                            boxShadow: moonPhaseInfo.shadow 
+                            boxShadow: moonPhaseInfo.shadow,
+                            transition: 'all 0.3s ease-in-out'
                         }}
                     >
                         {moonPhaseInfo.icon}
                     </div>
-                    <div className="moon-description">{moonPhase}</div>
+                    <div className="moon-description">
+                        {moonPhaseTranslations[moonPhase]}
+                    </div>
                 </div>
             </div>
 
             <div className="widget wind-compass">
                 <h3>Направление ветра</h3>
                 <div className="compass">
-                    <div className="compass-arrow" style={{ transform: `rotate(${windDirection}deg)` }}></div>
+                    <div 
+                        className="compass-arrow" 
+                        style={{ 
+                            transform: `rotate(${windDirection}deg)`,
+                            transition: 'transform 0.3s ease-in-out'
+                        }}
+                    ></div>
                     <div className="compass-directions">
                         <span className="direction-marker north">С</span>
                         <span className="direction-marker east">В</span>
@@ -131,7 +170,8 @@ const WeatherWidgets: React.FC<WeatherWidgetsProps> = ({
                             className="temperature-indicator" 
                             style={{ 
                                 height: `${((temperature + 20) / 40) * 100}%`,
-                                opacity: temperature <= -20 ? 0 : 1
+                                opacity: temperature <= -20 ? 0 : 1,
+                                transition: 'all 0.3s ease-in-out'
                             }}
                         />
                     </div>

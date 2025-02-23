@@ -1,13 +1,16 @@
 .daylight-info {
-    background-color: #1a1a1a;
-    border-radius: 12px;
+    background-color: #000000;
+    border-radius: 16px;
     padding: 24px;
     margin: 24px auto;
-    max-width: 400px;
+    max-width: 300px;
     color: #ffffff;
     position: relative;
     z-index: 1;
     overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    animation: fadeIn 0.5s ease-out;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
 .daylight-visualization {
@@ -15,189 +18,343 @@
     flex-direction: column;
     align-items: center;
     position: relative;
-    margin-top: 20px;
 }
 
 .daylight-arc {
-    width: 300px;
-    height: 150px;
+    width: 250px;
+    height: 125px;
     position: relative;
-    margin: 20px 0;
+    margin: 10px 0;
     overflow: hidden;
-    border-radius: 150px 150px 0 0;
-    background: linear-gradient(to bottom, #000000, #1a1a1a);
+    border-radius: 125px 125px 0 0;
+    background: linear-gradient(180deg, 
+        rgba(255, 191, 0, 0.1) 0%,
+        rgba(255, 191, 0, 0.05) 50%,
+        transparent 100%
+    );
+    box-shadow: inset 0 5px 15px rgba(255, 191, 0, 0.1);
 }
 
-.earth-container {
+.daylight-arc::before {
+    content: '';
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
+    width: 300%;
+    height: 300%;
+    top: -100%;
+    left: -100%;
+    background: conic-gradient(
+        from 180deg at 50% 50%,
+        transparent 0deg,
+        rgba(255, 191, 0, 0.1) 60deg,
+        rgba(255, 191, 0, 0.2) 180deg,
+        rgba(255, 191, 0, 0.1) 300deg,
+        transparent 360deg
+    );
+    animation: rotateGradient 20s linear infinite;
+    transform-origin: center center;
 }
 
-.earth {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(45deg, #1e3a8a, #3b82f6);
-    border-radius: 50%;
-    position: relative;
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-}
-
-.moon {
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(45deg, #94a3b8, #cbd5e1);
-    border-radius: 50%;
-    position: absolute;
-    top: -40px;
-    left: 50%;
-    transform-origin: center 40px;
-    animation: moonOrbit 20s linear infinite;
-    box-shadow: inset -3px -3px 5px rgba(0, 0, 0, 0.2),
-                0 0 10px rgba(148, 163, 184, 0.3);
-}
-
-.moon::after {
+.daylight-arc::after {
     content: '';
     position: absolute;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
-    background: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.3));
-    animation: moonPhase 20s linear infinite;
-}
-
-@keyframes moonOrbit {
-    0% {
-        transform: translateX(-50%) rotate(0deg);
-    }
-    100% {
-        transform: translateX(-50%) rotate(360deg);
-    }
-}
-
-@keyframes moonPhase {
-    0% { opacity: 0.2; }
-    50% { opacity: 1; }
-    100% { opacity: 0.2; }
+    top: 0;
+    left: 0;
+    background: radial-gradient(
+        circle at 50% 100%,
+        rgba(255, 191, 0, 0.2) 0%,
+        transparent 70%
+    );
+    animation: glowPulse 3s ease-in-out infinite;
 }
 
 .sun-time {
     position: absolute;
+    color: #FFB300;
+    font-size: 14px;
+    font-weight: 500;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    color: #fbbf24;
-    z-index: 2;
-}
-
-.sun-icon {
-    width: 24px;
-    height: 24px;
-    background: radial-gradient(circle at center, #fbbf24 30%, #f59e0b 70%);
-    border-radius: 50%;
-    margin-bottom: 8px;
-    position: relative;
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
-}
-
-.sun-icon::after {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: -8px;
-    right: -8px;
-    bottom: -8px;
-    background: radial-gradient(circle at center, rgba(251, 191, 36, 0.4) 0%, transparent 70%);
-    border-radius: 50%;
-    animation: sunGlow 2s ease-in-out infinite;
-}
-
-@keyframes sunGlow {
-    0% { transform: scale(1); opacity: 0.6; }
-    50% { transform: scale(1.2); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.6; }
+    gap: 8px;
+    opacity: 0;
+    animation: fadeSlideIn 0.5s ease-out forwards;
+    text-shadow: 0 0 10px rgba(255, 179, 0, 0.4);
 }
 
 .sunrise {
     left: 20px;
     top: 50%;
     transform: translateY(-50%);
+    animation-delay: 0.3s;
 }
 
 .sunset {
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
+    animation-delay: 0.4s;
+}
+
+.sun-icon {
+    width: 15px;
+    height: 15px;
+    background: radial-gradient(circle at 30% 30%, #FFD700, #FFB300);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 20px rgba(255, 179, 0, 0.6),
+        0 0 40px rgba(255, 179, 0, 0.4),
+        0 0 60px rgba(255, 179, 0, 0.2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -7.5px;
+    animation: orbitSun 15s linear infinite;
+    z-index: 2;
+}
+
+.sun-icon::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 179, 0, 0.4) 0%, transparent 70%);
+    animation: sunRays 3s ease-in-out infinite;
+}
+
+.sun-icon::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 179, 0, 0.6) 0%, transparent 70%);
+    animation: sunGlow 2s ease-in-out infinite alternate;
+    filter: blur(2px);
+}
+
+.earth-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, 0);
+    z-index: 1;
+}
+
+.earth {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(
+        45deg, 
+        #1e3c72 0%, 
+        #2a5298 50%, 
+        #4A90E2 100%
+    );
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 
+        0 0 20px rgba(74, 144, 226, 0.3),
+        0 0 40px rgba(74, 144, 226, 0.2),
+        inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    animation: earthPulse 4s ease-in-out infinite;
+}
+
+.earth::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 30% 30%,
+        rgba(255, 255, 255, 0.3) 0%,
+        transparent 60%
+    );
+    animation: earthLight 4s ease-in-out infinite alternate;
+}
+
+.earth::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.6));
+    animation: earthRotate 8s linear infinite;
+    filter: blur(1px);
 }
 
 .daylight-duration {
-    font-size: 28px;
-    font-weight: bold;
-    margin: 24px 0 16px;
+    font-size: 32px;
+    font-weight: 600;
+    margin: 20px 0 16px;
     color: #ffffff;
+    text-align: center;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out 0.5s forwards;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 .additional-info {
     text-align: center;
-    color: #94a3b8;
+    color: rgba(255, 255, 255, 0.7);
     font-size: 14px;
-    line-height: 1.8;
+    line-height: 1.6;
 }
 
 .additional-info div {
     margin: 4px 0;
+    opacity: 0;
+    animation: fadeSlideUp 0.5s ease-out forwards;
+    transition: color 0.3s ease;
 }
 
-/* Анимация смены дня и ночи */
-.daylight-arc::before {
-    content: '';
-    position: absolute;
-    width: 400%;
-    height: 400%;
-    top: -200%;
-    left: -150%;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(251, 191, 36, 0.15) 30%,
-        rgba(251, 191, 36, 0.3) 50%,
-        rgba(251, 191, 36, 0.15) 70%,
-        transparent 100%
-    );
-    animation: dayNightCycle 20s linear infinite;
-    transform-origin: center center;
-    z-index: 1;
+.additional-info div:hover {
+    color: rgba(255, 255, 255, 0.9);
 }
 
-@keyframes dayNightCycle {
+.additional-info div:nth-child(1) { animation-delay: 0.6s; }
+.additional-info div:nth-child(2) { animation-delay: 0.7s; }
+.additional-info div:nth-child(3) { animation-delay: 0.8s; }
+
+@keyframes orbitSun {
     0% {
-        transform: rotate(-90deg);
-        opacity: 0;
+        transform: rotate(-180deg) translateX(100px) rotate(180deg) scale(1);
     }
     25% {
-        opacity: 1;
+        transform: rotate(-90deg) translateX(100px) rotate(90deg) scale(1.2);
+    }
+    50% {
+        transform: rotate(0deg) translateX(100px) rotate(0deg) scale(1);
     }
     75% {
-        opacity: 1;
+        transform: rotate(90deg) translateX(100px) rotate(-90deg) scale(1.2);
     }
     100% {
-        transform: rotate(90deg);
-        opacity: 0;
+        transform: rotate(180deg) translateX(100px) rotate(-180deg) scale(1);
     }
 }
 
-/* Добавляем стили для времени */
-.sun-time span {
-    font-size: 14px;
-    font-weight: 500;
-    color: #fbbf24;
-    text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+@keyframes sunRays {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.4;
+    }
+    50% {
+        transform: scale(1.5) rotate(180deg);
+        opacity: 0.6;
+    }
 }
 
-/* Медиа-запрос для мобильных устройств */
+@keyframes sunGlow {
+    0% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(1.8);
+        opacity: 0.8;
+    }
+}
+
+@keyframes earthPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 20px rgba(74, 144, 226, 0.3),
+            0 0 40px rgba(74, 144, 226, 0.2);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 
+            0 0 30px rgba(74, 144, 226, 0.4),
+            0 0 60px rgba(74, 144, 226, 0.3);
+        transform: scale(1.05);
+    }
+}
+
+@keyframes earthLight {
+    0% {
+        opacity: 0.3;
+        transform: rotate(0deg);
+    }
+    100% {
+        opacity: 0.6;
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes earthRotate {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+@keyframes rotateGradient {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @media (max-width: 480px) {
     .daylight-info {
         margin: 16px;
@@ -205,27 +362,33 @@
     }
 
     .daylight-arc {
-        width: 240px;
-        height: 120px;
+        width: 200px;
+        height: 100px;
     }
 
-    .earth {
-        width: 40px;
-        height: 40px;
+    .daylight-duration {
+        font-size: 28px;
     }
 
-    .moon {
-        width: 16px;
-        height: 16px;
-        top: -30px;
-        transform-origin: center 30px;
+    .additional-info {
+        font-size: 13px;
     }
+}
 
-    .sunrise {
-        left: 10px;
+@media (prefers-reduced-motion: reduce) {
+    .sun-icon,
+    .earth,
+    .earth::after,
+    .earth::before,
+    .daylight-arc::before,
+    .daylight-arc::after {
+        animation: none;
     }
-
-    .sunset {
-        right: 10px;
+    
+    .daylight-info,
+    .sun-time,
+    .daylight-duration,
+    .additional-info div {
+        animation-duration: 0.1s;
     }
 } 

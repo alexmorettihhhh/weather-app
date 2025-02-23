@@ -6,12 +6,6 @@ import Daylight from '../Components/Daylight';
 import SearchSuggestions from '../Components/SearchSuggestions';
 import AnimatedWeather from '../Components/AnimatedWeather';
 import { WeatherData as ApiWeatherData } from '../types/weather';
-import type { MoonPhase } from '../Components/WeatherWidgets';
-import weatherRecommendations from '../Components/WeatherRecommendations';
-import extendedWeatherData from '../Components/ExtendedWeatherData';
-import weatherWidgets from '../Components/WeatherWidgets';
-import weatherCalendar from '../Components/WeatherCalendar';
-import weatherEducation from './WeatherEducation';
 
 // Ленивая загрузка тяжелых компонентов
 const TemperatureChart = lazy(() => import('../Components/TemperatureChart'));
@@ -19,7 +13,10 @@ const WeatherRecommendations = lazy(() => import('../Components/WeatherRecommend
 const ExtendedWeatherData = lazy(() => import('../Components/ExtendedWeatherData'));
 const WeatherWidgets = lazy(() => import('../Components/WeatherWidgets'));
 const WeatherCalendar = lazy(() => import('../Components/WeatherCalendar'));
-const WeatherEducation = lazy(() => import('./WeatherEducation'));
+const WeatherEducation = lazy(() => import('../Components/WeatherEducation'));
+
+type MoonPhase = 'New Moon' | 'Waxing Crescent' | 'First Quarter' | 'Waxing Gibbous' | 
+                 'Full Moon' | 'Waning Gibbous' | 'Last Quarter' | 'Waning Crescent';
 
 interface DayWeather {
     date: string;
@@ -1190,14 +1187,42 @@ const Weather: React.FC = () => {
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedCity, setSelectedCity] = useState<string>('Москва');
+    const [selectedCity, setSelectedCity] = useState<string>('');
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isCelsius, setIsCelsius] = useState(true);
     const [monthData, setMonthData] = useState<DayWeather[]>([]);
     const [cities] = useState<string[]>(CITIES_LIST.split('\n').filter(city => city.trim() !== ''));
-    const [isDay, setIsDay] = useState(true);
     const [showSuggestions, setShowSuggestions] = useState(false);
+
+    const getAutoCity = async () => {
+        try {
+            setIsLoading(true);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/weather/auto`);
+            if (response.data && response.data.name) {
+                setSelectedCity(response.data.name);
+            } else {
+                setSelectedCity('Москва'); // fallback
+            }
+        } catch (error) {
+            console.error('Ошибка при автоопределении города:', error);
+            setSelectedCity('Москва'); // fallback при ошибке
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Инициализация при первой загрузке
+    useEffect(() => {
+        getAutoCity();
+    }, []);
+
+    // Запрос погоды при изменении выбранного города
+    useEffect(() => {
+        if (selectedCity) {
+            fetchWeather(selectedCity);
+        }
+    }, [selectedCity]);
 
     const filterCities = (input: string) => {
         const filtered = cities
@@ -1284,12 +1309,6 @@ const Weather: React.FC = () => {
     };
 
     useEffect(() => {
-        if (selectedCity) {
-            fetchWeather(selectedCity);
-        }
-    }, [selectedCity]);
-
-    useEffect(() => {
         if (weatherData) {
             const calendarData: DayWeather[] = weatherData.forecast.map((day: Forecast) => ({
                 date: day.date,
@@ -1307,7 +1326,8 @@ const Weather: React.FC = () => {
     useEffect(() => {
         if (weatherData?.sys) {
             const now = Date.now() / 1000;
-            setIsDay(now > weatherData.sys.sunrise && now < weatherData.sys.sunset);
+            const isDay = now > weatherData.sys.sunrise && now < weatherData.sys.sunset;
+            document.documentElement.setAttribute('data-theme', isDay ? 'light' : 'dark');
         }
     }, [weatherData]);
 
@@ -1342,12 +1362,27 @@ const Weather: React.FC = () => {
 
     const getLocationWeather = () => {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const { latitude, longitude } = position.coords;
-                fetchWeather(`${latitude},${longitude}`);
-            });
+            setIsLoading(true);
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    try {
+                        await fetchWeather(`${latitude},${longitude}`);
+                    } catch (error) {
+                        console.error('Ошибка при получении погоды по координатам:', error);
+                        setError('Не удалось получить погоду по вашим координатам');
+                    } finally {
+                        setIsLoading(false);
+                    }
+                },
+                (error) => {
+                    console.error('Ошибка геолокации:', error);
+                    setError('Не удалось определить ваше местоположение');
+                    setIsLoading(false);
+                }
+            );
         } else {
-            alert("Geolocation is not supported by this browser.");
+            setError('Ваш браузер не поддерживает определение местоположения');
         }
     };
 

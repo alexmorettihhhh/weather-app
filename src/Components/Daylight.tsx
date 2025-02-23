@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Daylight.css';
 
 interface DaylightProps {
@@ -15,9 +15,15 @@ const Daylight: React.FC<DaylightProps> = ({
     sunset, 
     daylightDuration,
     moonPhase = "Убывающая луна",
-    magneticField = "Спокойное магнитное поле",
+    magneticField = "Спокойное",
     uvIndex = 0
 }) => {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const convertTo24Hour = (timeStr: string): string => {
         const [time, period] = timeStr.split(' ');
         const [hours, minutes] = time.split(':').map(Number);
@@ -31,28 +37,36 @@ const Daylight: React.FC<DaylightProps> = ({
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
     };
 
+    const getUVIndexText = (index: number): string => {
+        if (index <= 2) return 'Низкий УФ-индекс';
+        if (index <= 5) return 'Средний УФ-индекс';
+        if (index <= 7) return 'Высокий УФ-индекс';
+        return 'Очень высокий УФ-индекс';
+    };
+
     return (
-        <div className="daylight-info">
+        <div className={`daylight-info ${mounted ? 'mounted' : ''}`}>
             <div className="daylight-visualization">
                 <div className="daylight-arc">
                     <div className="earth-container">
-                        <div className="earth"></div>
-                        <div className="moon" title={moonPhase}></div>
+                        <div className="earth" />
                     </div>
                     <div className="sun-time sunrise">
-                        <div className="sun-icon"></div>
-                        <span>{convertTo24Hour(sunrise)}</span>
+                        <div className="sun-icon" />
+                        {convertTo24Hour(sunrise)}
                     </div>
                     <div className="sun-time sunset">
-                        <div className="sun-icon"></div>
-                        <span>{convertTo24Hour(sunset)}</span>
+                        <div className="sun-icon" />
+                        {convertTo24Hour(sunset)}
                     </div>
                 </div>
-                <div className="daylight-duration">{daylightDuration}</div>
+                <div className="daylight-duration">
+                    {daylightDuration}
+                </div>
                 <div className="additional-info">
                     <div>{moonPhase}</div>
                     <div>{magneticField}</div>
-                    <div>Низкий УФ-индекс</div>
+                    <div>{getUVIndexText(uvIndex)}</div>
                 </div>
             </div>
         </div>
@@ -60,3 +74,4 @@ const Daylight: React.FC<DaylightProps> = ({
 };
 
 export default Daylight;
+

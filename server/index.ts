@@ -1,12 +1,12 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import axios from 'axios';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
-import sanitize from 'sanitize-html';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
+import geoip from 'geoip-lite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -51,47 +51,70 @@ const validateCity = (city: string): boolean => {
     return cityRegex.test(city) && city.length < 100;
 };
 
-interface Forecast {
-    day: string;
-    temp: string;
-    date: string;
-    condition: string;
+interface HourData {
+    temp_c: number;
 }
 
-interface AirQuality {
-    co: number;
-    no2: number;
-    o3: number;
-    so2: number;
-    pm2_5: number;
-    pm10: number;
-}
-
-interface WeatherData {
-    temperature: string;
-    description: string;
-    feelsLike: string;
-    wind: string;
-    humidity: string;
-    pressure: string;
-    forecast: Forecast[];
-    airQuality: AirQuality;
-    uvIndex: number;
-    maxUvTime: string;
-    moonPhase: string;
-    moonInfluence: string;
-    magneticField: string;
-    precipitationChance: number;
-    hourlyTemperatures: number[];
+interface AstroData {
     sunrise: string;
     sunset: string;
-    daylightDuration: string;
-    monthData: {
-        date: string;
-        temperature: number;
-        description: string;
-        icon: string;
-    }[];
+    sun_hour_max: string;
+    moon_phase: string;
+}
+
+interface DayData {
+    avgtemp_c: number;
+    mintemp_c: number;
+    maxtemp_c: number;
+    daily_chance_of_rain: number;
+    condition: {
+        text: string;
+    };
+}
+
+interface ForecastDayData {
+    date: string;
+    day: DayData;
+    astro: AstroData;
+    hour: HourData[];
+}
+
+interface WeatherAPIResponse {
+    location: {
+        lon: number;
+        lat: number;
+        country: string;
+        timezone: string;
+        id?: number;
+    };
+    current: {
+        temp_c: number;
+        feelslike_c: number;
+        condition: {
+            code: number;
+            text: string;
+            icon: string;
+        };
+        wind_kph: number;
+        wind_degree: number;
+        pressure_mb: number;
+        humidity: number;
+        cloud: number;
+        vis_km: number;
+        last_updated_epoch: number;
+        uv: number;
+        air_quality: {
+            co: number;
+            no2: number;
+            o3: number;
+            so2: number;
+            pm2_5: number;
+            pm10: number;
+        };
+    };
+    forecast: {
+        forecastday: ForecastDayData[];
+    };
 }
 
 type MoonPhase = 'New Moon' | 'Waxing Crescent' | 'First Quarter' | 'Waxing Gibbous' | 
@@ -108,13 +131,128 @@ interface MoonInfluences {
     'Waning Crescent': string;
 }
 
+interface AxiosErrorResponse {
+    response?: {
+        status: number;
+        data?: {
+            error?: {
+                message: string;
+            };
+        };
+    };
+    code?: string;
+    message: string;
+}
 
+// Функция для получения реального IP адреса
+const getClientIp = (req: Request): string => {
+    // Проверяем различные заголовки для определения IP
+    const ipSources = [
+        req.headers['cf-connecting-ip'],
+        req.headers['x-real-ip'],
+        req.headers['x-client-ip'],
+        req.headers['x-forwarded-for'],
+        req.connection.remoteAddress,
+        req.socket.remoteAddress,
+        req.ip
+    ];
+
+    console.log('Все возможные источники IP:', ipSources);
+
+    // Получаем первый валидный IP
+    for (const source of ipSources) {
+        if (source) {
+            const ip = Array.isArray(source) 
+                ? source[0] 
+                : typeof source === 'string' 
+                    ? source.split(',')[0].trim()
+                    : source;
+                    
+            if (ip && ip !== 'unknown') {
+                // Очищаем IPv6 префикс если есть
+                const cleanIp = ip.replace(/^::ffff:/, '');
+                console.log('Использую IP:', cleanIp);
+                return cleanIp;
+            }
+        }
+    }
+
+    console.log('Не удалось определить IP, использую локальный');
+    return '127.0.0.1';
+};
+
+// Функция для определения города по IP
+const getCityByIp = (ip: string): string | null => {
+    try {
+        console.log('Определяю город для IP:', ip);
+        
+        // Пропускаем локальные IP
+        if (['127.0.0.1', 'localhost', '::1'].includes(ip)) {
+            console.log('Обнаружен локальный IP');
+            return null;
+        }
+
+        const geo = geoip.lookup(ip);
+        console.log('Результат геолокации:', geo);
+
+        if (geo && geo.city && geo.country) {
+            const city = `${geo.city}, ${geo.country}`;
+            console.log('Определен город:', city);
+            return city;
+        }
+
+        console.log('Не удалось определить город по IP');
+        return null;
+    } catch (error) {
+        console.error('Ошибка при определении города по IP:', error);
+        return null;
+    }
+};
+
+// Обновляем маршрут для автоопределения погоды по IP
+app.get('/weather/auto', async (req: Request, res: Response) => {
+    try {
+        const clientIp = getClientIp(req);
+        console.log('IP клиента:', clientIp);
+        console.log('Все заголовки запроса:', req.headers);
+
+        const city = getCityByIp(clientIp);
+        if (!city) {
+            console.log('Город не определен, использую город по умолчанию');
+            return res.redirect('/weather/Moscow');
+        }
+
+        console.log('Перенаправляю на город:', city);
+        return res.redirect(`/weather/${encodeURIComponent(city)}`);
+    } catch (error) {
+        console.error('Ошибка при автоопределении города:', error);
+        res.status(500).json({ 
+            error: 'Не удалось определить город',
+            details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+        });
+    }
+});
+
+// Обновляем основной обработчик погоды для поддержки автоопределения
 const getWeather = async (req: Request<{ city: string }>, res: Response): Promise<void> => {
     try {
-        const city = decodeURIComponent(req.params.city).trim();
-        console.log(`Получен запрос погоды для города: ${city}`);
+        let city = decodeURIComponent(req.params.city).trim();
         
-        if (!city || !validateCity(city)) {
+        // Если город не указан, пробуем определить по IP
+        if (!city) {
+            const clientIp = getClientIp(req);
+            const detectedCity = getCityByIp(clientIp);
+            if (detectedCity) {
+                city = detectedCity;
+            } else {
+                res.status(400).json({ 
+                    error: 'Не удалось определить город' 
+                });
+                return;
+            }
+        }
+
+        if (!validateCity(city)) {
             console.log('Некорректное название города:', city);
             res.status(400).json({ 
                 error: 'Некорректное название города' 
@@ -144,7 +282,7 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
         console.log(`Запрос к API: ${apiUrl}`);
         console.log('Параметры запроса:', { ...params, key: '***' });
 
-        const response = await axios.get(apiUrl, {
+        const response = await axios.get<WeatherAPIResponse>(apiUrl, {
             params,
             timeout: 10000,
             headers: {
@@ -172,7 +310,7 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
         }
 
         const hourlyTemperatures = forecast.forecastday[0].hour.map(
-            (hour: any) => hour.temp_c
+            (hour: HourData) => hour.temp_c
         );
 
         const sunrise = forecast.forecastday[0].astro.sunrise;
@@ -236,7 +374,7 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
             name: city,
             cod: 200,
             // Дополнительные данные для нашего приложения
-            forecast: forecast.forecastday.map((day: any) => ({
+            forecast: forecast.forecastday.map((day: ForecastDayData) => ({
                 day: new Date(day.date).toLocaleDateString('ru-RU', { weekday: 'long' }),
                 temp: day.day.avgtemp_c.toString(),
                 date: new Date(day.date).toLocaleDateString('ru-RU'),
@@ -262,41 +400,45 @@ const getWeather = async (req: Request<{ city: string }>, res: Response): Promis
 
         console.log('Отправка ответа клиенту');
         res.json(weatherResponse);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Ошибка при получении данных о погоде:', error);
-        console.error('Детали ошибки:', {
-            message: error.message,
-            status: error.response?.status,
-            data: error.response?.data,
-            code: error.code
-        });
         
-        if (error.response?.status === 404) {
-            res.status(404).json({ 
-                error: 'Город не найден',
-                details: error.response.data?.error?.message || 'Город не найден в базе данных погодного сервиса'
+        if (error instanceof Error) {
+            const axiosError = error as AxiosErrorResponse;
+            console.error('Детали ошибки:', {
+                message: axiosError.message,
+                status: axiosError.response?.status,
+                data: axiosError.response?.data,
+                code: axiosError.code
             });
-            return;
-        }
-        
-        if (error.code === 'ECONNABORTED') {
-            res.status(408).json({
-                error: 'Превышено время ожидания запроса к погодному сервису'
-            });
-            return;
-        }
+            
+            if (axiosError.response?.status === 404) {
+                res.status(404).json({ 
+                    error: 'Город не найден',
+                    details: axiosError.response.data?.error?.message || 'Город не найден в базе данных погодного сервиса'
+                });
+                return;
+            }
+            
+            if (axiosError.code === 'ECONNABORTED') {
+                res.status(408).json({
+                    error: 'Превышено время ожидания запроса к погодному сервису'
+                });
+                return;
+            }
 
-        if (error.message.includes('API response')) {
-            res.status(502).json({
-                error: 'Некорректный ответ от погодного сервиса',
-                details: error.message
-            });
-            return;
+            if (axiosError.message.includes('API response')) {
+                res.status(502).json({
+                    error: 'Некорректный ответ от погодного сервиса',
+                    details: axiosError.message
+                });
+                return;
+            }
         }
         
         res.status(500).json({ 
             error: 'Ошибка при получении данных о погоде',
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
         });
     }
 };
@@ -323,7 +465,7 @@ function getMagneticFieldStatus(): string {
 }
 
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response) => {
     console.error('Ошибка сервера:', err);
     
     if (err instanceof SyntaxError) {

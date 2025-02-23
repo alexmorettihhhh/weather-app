@@ -1,280 +1,279 @@
 .weather-education {
-    background-color: #000000;
-    border: 1px solid rgba(100, 108, 255, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
     border-radius: 16px;
-    padding: 24px;
-    margin: 24px 0;
-    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
 }
 
 .education-tabs {
     display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 15px;
+    margin-bottom: 30px;
     overflow-x: auto;
-    padding-bottom: 8px;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 12px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 12px;
-    border: 1px solid rgba(100, 108, 255, 0.1);
+    -webkit-overflow-scrolling: touch;
 }
 
 .tab-button {
-    background: #000000;
-    border: 1px solid rgba(100, 108, 255, 0.2);
-    color: #ffffff;
-    padding: 12px 24px;
-    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(74, 144, 226, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
+    backdrop-filter: blur(5px);
 }
 
 .tab-button:hover {
-    background: rgba(100, 108, 255, 0.1);
-    border-color: rgba(100, 108, 255, 0.4);
+    background: rgba(74, 144, 226, 0.15);
+    transform: translateY(-2px);
 }
 
 .tab-button.active {
-    background: rgba(100, 108, 255, 0.2);
-    border-color: #646cff;
-    color: #646cff;
-    box-shadow: 0 0 15px rgba(100, 108, 255, 0.2);
+    background: rgba(74, 144, 226, 0.2);
+    box-shadow: 0 0 20px rgba(74, 144, 226, 0.1);
 }
 
-.education-content {
-    min-height: 400px;
+.tab-icon {
+    font-size: 24px;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.1));
 }
 
-/* Стили для метеорологических явлений */
-.phenomena-grid {
+.education-articles,
+.weather-phenomena {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    padding: 20px 0;
 }
 
+.article-card,
 .phenomenon-card {
-    background: #000000;
-    border: 1px solid rgba(100, 108, 255, 0.1);
-    border-radius: 12px;
-    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.phenomenon-card:hover {
-    border-color: rgba(100, 108, 255, 0.4);
-    background: rgba(100, 108, 255, 0.05);
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(100, 108, 255, 0.1);
-}
-
-.phenomenon-header {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
+    flex-direction: column;
+    height: 100%;
+    min-height: 450px;
 }
 
-.phenomenon-header h3 {
-    color: #646cff;
-    font-size: 20px;
+.article-card:hover,
+.phenomenon-card:hover {
+    border-color: rgba(74, 144, 226, 0.3);
+    box-shadow: 0 0 30px rgba(74, 144, 226, 0.1);
+    transform: translateY(-5px);
+}
+
+.article-image,
+.phenomenon-image,
+.kids-content-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 16px 16px 0 0;
+    background-color: rgba(0, 0, 0, 0.2);
     margin: 0;
+    padding: 0;
+    display: block;
+    position: relative;
 }
 
-.phenomenon-icon {
-    font-size: 32px;
-    filter: drop-shadow(0 0 8px rgba(100, 108, 255, 0.3));
+picture {
+    width: 100%;
+    height: 250px;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+picture source,
+picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+    display: block;
+}
+
+.article-card:hover picture img,
+.article-card:hover picture source {
+    transform: scale(1.05);
+}
+
+.article-content,
+.phenomenon-content {
+    padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+}
+
+.article-meta {
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.article-category,
+.article-difficulty {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    background: rgba(74, 144, 226, 0.15);
+    color: #4A90E2;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.article-content h3 {
+    font-size: 22px;
+    line-height: 1.4;
+    margin: 0;
+    color: #4A90E2;
+    font-weight: 600;
+}
+
+.article-content p {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    margin: 0;
+    flex-grow: 1;
+    font-size: 15px;
+}
+
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tag {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    background: rgba(74, 144, 226, 0.1);
+    color: #4A90E2;
     transition: all 0.3s ease;
 }
 
-.phenomenon-description {
-    color: rgba(255, 255, 255, 0.8);
-    margin: 12px 0;
-    line-height: 1.6;
+.tag:hover {
+    background: rgba(74, 144, 226, 0.2);
+    transform: translateY(-2px);
 }
 
 .phenomenon-details {
+    margin-top: 15px;
+}
+
+.phenomenon-details h4 {
+    margin: 15px 0 10px;
+    color: #4A90E2;
+    font-size: 16px;
+}
+
+.phenomenon-details ul {
     list-style: none;
     padding: 0;
 }
 
 .phenomenon-details li {
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(100, 108, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.phenomenon-details li:last-child {
-    border-bottom: none;
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .phenomenon-details li::before {
     content: '•';
-    color: #646cff;
-    margin-right: 8px;
+    position: absolute;
+    left: 0;
+    color: #4A90E2;
 }
 
-/* Стили для интересных фактов */
-.facts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
+.education-footer {
+    position: sticky;
+    bottom: 20px;
+    margin-left: auto;
+    width: fit-content;
+    z-index: 100;
+    padding: 0 20px;
 }
 
-.fact-card {
-    background: #000000;
-    border: 1px solid rgba(100, 108, 255, 0.1);
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
+.scroll-top-button {
+    padding: 12px 24px;
+    border-radius: 30px;
+    background: rgba(74, 144, 226, 0.3);
+    color: white;
+    border: none;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.fact-card:hover {
-    border-color: rgba(100, 108, 255, 0.4);
-    background: rgba(100, 108, 255, 0.05);
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(100, 108, 255, 0.1);
-}
-
-.fact-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-    display: block;
-    filter: drop-shadow(0 0 8px rgba(100, 108, 255, 0.3));
-    transition: all 0.3s ease;
-}
-
-.fact-card h3 {
-    color: #646cff;
-    margin: 12px 0;
-    font-size: 18px;
-}
-
-.fact-card p {
-    color: rgba(255, 255, 255, 0.8);
-    line-height: 1.6;
-}
-
-/* Стили для климатических особенностей */
-.climate-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
-}
-
-.climate-card {
-    background: #000000;
-    border: 1px solid rgba(100, 108, 255, 0.1);
-    border-radius: 12px;
-    padding: 20px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.climate-card:hover {
-    border-color: rgba(100, 108, 255, 0.4);
-    background: rgba(100, 108, 255, 0.05);
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(100, 108, 255, 0.1);
-}
-
-.climate-header {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 8px;
 }
 
-.climate-header h3 {
-    color: #646cff;
-    font-size: 20px;
-    margin: 0;
+.scroll-top-button:hover {
+    background: rgba(74, 144, 226, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
-.climate-icon {
-    font-size: 32px;
-    filter: drop-shadow(0 0 8px rgba(100, 108, 255, 0.3));
-    transition: all 0.3s ease;
+.scroll-top-button::before {
+    content: '↑';
+    font-size: 18px;
+    line-height: 1;
 }
 
-.climate-description {
+.coming-soon {
+    text-align: center;
+    padding: 40px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+}
+
+.coming-soon h3 {
+    color: #4A90E2;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.coming-soon p {
     color: rgba(255, 255, 255, 0.8);
-    margin: 12px 0;
-    line-height: 1.6;
-}
-
-.climate-characteristics {
-    list-style: none;
-    padding: 0;
-}
-
-.climate-characteristics li {
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(100, 108, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.climate-characteristics li:last-child {
-    border-bottom: none;
-}
-
-.climate-characteristics li::before {
-    content: '•';
-    color: #646cff;
-    margin-right: 8px;
-}
-
-/* Медиа-запросы для адаптивности */
-@media (max-width: 768px) {
-    .weather-education {
-        padding: 16px;
-        margin: 16px 0;
-    }
-
-    .education-tabs {
-        padding: 8px;
-    }
-
-    .tab-button {
-        padding: 8px 16px;
-        font-size: 14px;
-    }
-
-    .phenomenon-card,
-    .fact-card,
-    .climate-card {
-        padding: 16px;
-    }
-
-    .phenomenon-icon,
-    .climate-icon {
-        font-size: 24px;
-    }
-
-    .fact-icon {
-        font-size: 36px;
-    }
-}
-
-/* Анимации */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.phenomenon-card,
-.fact-card,
-.climate-card {
-    animation: fadeIn 0.5s ease forwards;
+    font-size: 16px;
 }
 
 /* Стилизация скроллбара */
@@ -288,18 +287,748 @@
 }
 
 .education-tabs::-webkit-scrollbar-thumb {
-    background: rgba(100, 108, 255, 0.3);
+    background: rgba(74, 144, 226, 0.3);
     border-radius: 2px;
 }
 
 .education-tabs::-webkit-scrollbar-thumb:hover {
-    background: rgba(100, 108, 255, 0.5);
+    background: rgba(74, 144, 226, 0.5);
 }
 
-/* Анимация для иконок */
-.phenomenon-card:hover .phenomenon-icon,
-.fact-card:hover .fact-icon,
-.climate-card:hover .climate-icon {
-    filter: drop-shadow(0 0 12px rgba(100, 108, 255, 0.5));
-    transform: scale(1.1);
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .weather-education {
+        padding: 10px;
+        margin: 10px;
+    }
+
+    .education-tabs {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .tab-button {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+
+    .tab-icon {
+        font-size: 20px;
+    }
+
+    .education-articles,
+    .weather-phenomena {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .article-image,
+    .phenomenon-image,
+    picture {
+        height: 200px;
+    }
+
+    .article-content,
+    .phenomenon-content {
+        padding: 20px;
+    }
+
+    .article-content h3 {
+        font-size: 20px;
+    }
+
+    .article-card,
+    .phenomenon-card {
+        min-height: 400px;
+    }
+
+    .education-footer {
+        bottom: 10px;
+        padding: 0 10px;
+    }
+
+    .scroll-top-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .education-articles,
+    .weather-phenomena {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .article-image,
+    .phenomenon-image,
+    picture {
+        height: 180px;
+    }
+}
+
+/* Анимации для интерактивных элементов */
+.interactive-element {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.interactive-element::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(255,255,255,0.1) 0%, 
+                rgba(255,255,255,0) 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.interactive-element:hover::after {
+    opacity: 1;
+}
+
+/* Стили для интерактивных материалов */
+.interactive-materials {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.interactive-material-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+}
+
+.material-content h3 {
+    color: #4A90E2;
+    margin-bottom: 10px;
+}
+
+.material-type {
+    display: inline-block;
+    padding: 4px 8px;
+    background: rgba(74, 144, 226, 0.1);
+    border-radius: 6px;
+    color: #4A90E2;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+
+.material-instructions,
+.material-requirements {
+    margin-top: 15px;
+}
+
+.material-instructions h4,
+.material-requirements h4 {
+    color: #4A90E2;
+    margin-bottom: 10px;
+}
+
+.material-instructions ol,
+.material-requirements ul {
+    padding-left: 20px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.material-instructions li,
+.material-requirements li {
+    margin-bottom: 8px;
+}
+
+.age-group {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+}
+
+/* Стили для викторин */
+.education-quizzes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.quiz-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+}
+
+.quiz-content h3 {
+    color: #4A90E2;
+    margin-bottom: 10px;
+}
+
+.quiz-meta {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.quiz-difficulty,
+.quiz-category,
+.quiz-time {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.quiz-preview {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.start-quiz-button {
+    margin-top: 15px;
+    padding: 12px 24px;
+    background: rgba(74, 144, 226, 0.2);
+    border: none;
+    border-radius: 30px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.start-quiz-button:hover {
+    background: rgba(74, 144, 226, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Стили для детского контента */
+.kids-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    padding: 20px 0;
+}
+
+.kids-content-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 450px;
+    transition: all 0.3s ease;
+}
+
+.kids-content-card:hover {
+    border-color: rgba(74, 144, 226, 0.3);
+    box-shadow: 0 0 30px rgba(74, 144, 226, 0.1);
+    transform: translateY(-5px);
+}
+
+.kids-content-image-container {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.kids-content-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.kids-content-card:hover .kids-content-image {
+    transform: scale(1.05);
+}
+
+.kids-content-info {
+    padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+}
+
+.kids-content-info h3 {
+    color: #4A90E2;
+    font-size: 22px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.kids-description {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.kids-content-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.kids-content-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.age-range,
+.content-type,
+.content-difficulty {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    background: rgba(74, 144, 226, 0.15);
+    color: #4A90E2;
+    text-transform: capitalize;
+}
+
+.materials-needed,
+.parent-guidance {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.materials-needed h4,
+.parent-guidance h4 {
+    color: #4A90E2;
+    font-size: 16px;
+    margin: 0 0 10px 0;
+}
+
+.materials-needed ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.materials-needed li {
+    color: rgba(255, 255, 255, 0.8);
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.materials-needed li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #4A90E2;
+}
+
+.parent-guidance p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .kids-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .kids-content-card {
+        min-height: auto;
+    }
+
+    .kids-content-image-container {
+        height: 200px;
+    }
+
+    .kids-content-info {
+        padding: 20px;
+    }
+
+    .kids-content-info h3 {
+        font-size: 20px;
+    }
+}
+
+/* Стили для интересных фактов */
+.interesting-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.fact-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    text-align: center;
+}
+
+.fact-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    display: block;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+}
+
+.fact-card h3 {
+    color: #4A90E2;
+    margin-bottom: 10px;
+}
+
+/* Стили для климатических зон */
+.climate-zones {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.climate-zone-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+}
+
+.zone-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.zone-icon {
+    font-size: 32px;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+.zone-header h3 {
+    color: #4A90E2;
+    margin: 0;
+}
+
+.zone-description {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 20px;
+}
+
+.zone-details {
+    display: grid;
+    gap: 20px;
+}
+
+.characteristics h4,
+.flora h4,
+.fauna h4 {
+    color: #4A90E2;
+    margin-bottom: 10px;
+}
+
+.characteristics ul,
+.flora ul,
+.fauna ul {
+    list-style: none;
+    padding: 0;
+}
+
+.characteristics li,
+.flora li,
+.fauna li {
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.characteristics li::before,
+.flora li::before,
+.fauna li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #4A90E2;
+}
+
+.flora-fauna {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .interactive-materials,
+    .education-quizzes,
+    .kids-content,
+    .interesting-facts,
+    .climate-zones {
+        grid-template-columns: 1fr;
+    }
+
+    .flora-fauna {
+        grid-template-columns: 1fr;
+    }
+
+    .quiz-meta,
+    .kids-content-meta {
+        flex-direction: column;
+    }
+
+    .fact-icon {
+        font-size: 36px;
+    }
+
+    .zone-icon {
+        font-size: 24px;
+    }
+}
+
+/* Стили для активной викторины */
+.quiz-active {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 30px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quiz-question {
+    margin-bottom: 30px;
+}
+
+.quiz-question h3 {
+    color: #4A90E2;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.quiz-options {
+    display: grid;
+    gap: 15px;
+}
+
+.quiz-option {
+    padding: 15px 20px;
+    background: rgba(74, 144, 226, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quiz-option:hover {
+    background: rgba(74, 144, 226, 0.2);
+    transform: translateX(5px);
+}
+
+.quiz-option.selected {
+    background: rgba(74, 144, 226, 0.3);
+    border-color: #4A90E2;
+}
+
+.quiz-option.correct {
+    background: rgba(46, 204, 113, 0.3);
+    border-color: #2ecc71;
+}
+
+.quiz-option.incorrect {
+    background: rgba(231, 76, 60, 0.3);
+    border-color: #e74c3c;
+}
+
+.quiz-progress {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quiz-progress-bar {
+    flex-grow: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    margin: 0 15px;
+    overflow: hidden;
+}
+
+.quiz-progress-fill {
+    height: 100%;
+    background: #4A90E2;
+    transition: width 0.3s ease;
+}
+
+.quiz-timer {
+    padding: 8px 12px;
+    background: rgba(74, 144, 226, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+}
+
+.quiz-explanation {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.quiz-controls {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.quiz-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 30px;
+    background: rgba(74, 144, 226, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.quiz-button:hover {
+    background: rgba(74, 144, 226, 0.3);
+    transform: translateY(-2px);
+}
+
+.quiz-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.quiz-results {
+    text-align: center;
+    padding: 30px;
+}
+
+.quiz-score {
+    font-size: 48px;
+    color: #4A90E2;
+    margin-bottom: 20px;
+}
+
+.quiz-feedback {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 30px;
+}
+
+.quiz-restart {
+    margin-top: 20px;
+}
+
+/* Стилизация скроллбара основного контейнера */
+.weather-education::-webkit-scrollbar {
+    width: 6px;
+}
+
+.weather-education::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.weather-education::-webkit-scrollbar-thumb {
+    background: rgba(74, 144, 226, 0.3);
+    border-radius: 3px;
+}
+
+.weather-education::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 144, 226, 0.5);
+}
+
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quiz-header h3 {
+    color: #4A90E2;
+    margin: 0;
+}
+
+.quiz-button.quiz-exit {
+    background: rgba(231, 76, 60, 0.2);
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.quiz-button.quiz-exit:hover {
+    background: rgba(231, 76, 60, 0.3);
+}
+
+.quiz-final-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.quiz-final-buttons .quiz-button {
+    min-width: 180px;
+}
+
+@media (max-width: 768px) {
+    .quiz-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .quiz-final-buttons {
+        flex-direction: column;
+    }
+
+    .quiz-final-buttons .quiz-button {
+        width: 100%;
+    }
 } 

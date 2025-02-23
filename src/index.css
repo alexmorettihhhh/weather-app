@@ -90,3 +90,88 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* PWA Installation and Update Prompts */
+.pwa-install-banner,
+.pwa-update-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 12px;
+  padding: 16px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  animation: slideUp 0.3s ease-out;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pwa-install-content,
+.pwa-update-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pwa-install-content p,
+.pwa-update-content p {
+  color: #ffffff;
+  margin: 0;
+  font-size: 16px;
+}
+
+.pwa-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.pwa-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.pwa-button.primary {
+  background: #4A90E2;
+}
+
+.pwa-button.primary:hover {
+  background: #357ABD;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .pwa-install-banner,
+  .pwa-update-banner {
+    width: 90%;
+    bottom: 10px;
+  }
+
+  .pwa-install-content,
+  .pwa-update-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .pwa-button {
+    width: 100%;
+    margin-top: 8px;
+  }
+}

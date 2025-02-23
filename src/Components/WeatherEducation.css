@@ -1,58 +1,74 @@
 .weather-education {
-    max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
     padding: 20px;
     min-height: auto;
-    max-height: 90vh;
+    max-height: none;
     overflow-y: auto;
-    background-color: rgba(0, 0, 0, 0.3);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);
     backdrop-filter: blur(10px);
-    border-radius: 16px;
+    border-radius: 24px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .education-tabs {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     margin-bottom: 30px;
     overflow-x: auto;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 12px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .tab-button {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 24px;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
     border: none;
     border-radius: 12px;
-    background: rgba(74, 144, 226, 0.08);
+    background: rgba(74, 144, 226, 0.1);
     color: rgba(255, 255, 255, 0.9);
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
     backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-width: fit-content;
 }
 
 .tab-button:hover {
-    background: rgba(74, 144, 226, 0.15);
+    background: rgba(74, 144, 226, 0.2);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
 }
 
 .tab-button.active {
-    background: rgba(74, 144, 226, 0.2);
-    box-shadow: 0 0 20px rgba(74, 144, 226, 0.1);
+    background: rgba(74, 144, 226, 0.25);
+    box-shadow: 0 0 20px rgba(74, 144, 226, 0.15);
+    color: #ffffff;
 }
 
 .tab-icon {
-    font-size: 24px;
+    font-size: 18px;
     opacity: 0.9;
-    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.1));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .education-articles,
@@ -64,24 +80,27 @@
 }
 
 .article-card,
-.phenomenon-card {
+.phenomenon-card,
+.interactive-material-card {
     background: rgba(0, 0, 0, 0.3);
-    border-radius: 16px;
+    border-radius: 20px;
     overflow: hidden;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     height: 100%;
     min-height: 450px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .article-card:hover,
-.phenomenon-card:hover {
+.phenomenon-card:hover,
+.interactive-material-card:hover {
     border-color: rgba(74, 144, 226, 0.3);
-    box-shadow: 0 0 30px rgba(74, 144, 226, 0.1);
-    transform: translateY(-5px);
+    box-shadow: 0 8px 32px rgba(74, 144, 226, 0.15);
+    transform: translateY(-5px) scale(1.02);
 }
 
 .article-image,
@@ -90,12 +109,13 @@
     width: 100%;
     height: 250px;
     object-fit: cover;
-    border-radius: 16px 16px 0 0;
+    border-radius: 20px 20px 0 0;
     background-color: rgba(0, 0, 0, 0.2);
     margin: 0;
     padding: 0;
     display: block;
     position: relative;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 picture {
@@ -105,6 +125,7 @@ picture {
     position: relative;
     overflow: hidden;
     background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 20px 20px 0 0;
 }
 
 picture source,
@@ -113,13 +134,13 @@ picture img {
     height: 100%;
     object-fit: cover;
     object-position: center;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: block;
 }
 
 .article-card:hover picture img,
 .article-card:hover picture source {
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 .article-content,
@@ -129,7 +150,7 @@ picture img {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
 }
 
 .article-meta {
@@ -150,6 +171,13 @@ picture img {
     text-transform: capitalize;
     letter-spacing: 0.5px;
     font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.article-category:hover,
+.article-difficulty:hover {
+    background: rgba(74, 144, 226, 0.25);
+    transform: translateY(-1px);
 }
 
 .article-content h3 {
@@ -282,74 +310,130 @@ picture img {
 }
 
 .education-tabs::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.4);
     border-radius: 2px;
 }
 
 .education-tabs::-webkit-scrollbar-thumb {
-    background: rgba(74, 144, 226, 0.3);
+    background: rgba(0, 0, 0, 0.6);
     border-radius: 2px;
 }
 
 .education-tabs::-webkit-scrollbar-thumb:hover {
-    background: rgba(74, 144, 226, 0.5);
+    background: rgba(0, 0, 0, 0.8);
 }
 
 /* Медиа-запросы для адаптивности */
 @media (max-width: 768px) {
     .weather-education {
-        padding: 10px;
-        margin: 10px;
+        padding: 15px;
+        margin: 0;
+        border-radius: 16px;
+        width: 100%;
     }
 
     .education-tabs {
-        padding: 12px;
-        gap: 10px;
+        padding: 10px;
+        gap: 8px;
+        border-radius: 12px;
     }
 
     .tab-button {
-        padding: 10px 18px;
+        padding: 10px 16px;
         font-size: 14px;
+        border-radius: 10px;
     }
 
     .tab-icon {
-        font-size: 20px;
+        font-size: 18px;
     }
 
-    .education-articles,
-    .weather-phenomena {
-        grid-template-columns: 1fr;
-        gap: 20px;
+    .article-card,
+    .phenomenon-card,
+    .interactive-material-card {
+        border-radius: 16px;
+        min-height: auto;
     }
 
     .article-image,
     .phenomenon-image,
     picture {
         height: 200px;
+        border-radius: 16px 16px 0 0;
     }
 
     .article-content,
     .phenomenon-content {
         padding: 20px;
+        gap: 12px;
     }
 
-    .article-content h3 {
-        font-size: 20px;
+    .article-content h3,
+    .phenomenon-content h3,
+    .kids-content-info h3 {
+        font-size: 18px;
     }
 
-    .article-card,
-    .phenomenon-card {
-        min-height: 400px;
+    .article-meta,
+    .kids-content-meta {
+        gap: 6px;
     }
 
-    .education-footer {
-        bottom: 10px;
-        padding: 0 10px;
+    .article-category,
+    .article-difficulty,
+    .content-type,
+    .content-difficulty {
+        padding: 4px 10px;
+        font-size: 11px;
+    }
+
+    .article-tags {
+        gap: 6px;
+        padding-top: 12px;
+    }
+
+    .tag {
+        padding: 3px 8px;
+        font-size: 11px;
     }
 
     .scroll-top-button {
-        padding: 10px 20px;
-        font-size: 14px;
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .interactive-materials {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .interactive-material-card {
+        padding: 15px;
+    }
+
+    .material-content h3 {
+        font-size: 18px;
+    }
+
+    .material-type {
+        font-size: 11px;
+        padding: 3px 6px;
+    }
+
+    .material-instructions h4,
+    .material-requirements h4 {
+        font-size: 15px;
+    }
+
+    .material-instructions li,
+    .material-requirements li {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .age-group {
+        font-size: 11px;
+        padding: 3px 6px;
     }
 }
 
@@ -383,10 +467,11 @@ picture img {
     bottom: 0;
     background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
                 rgba(255,255,255,0.1) 0%, 
-                rgba(255,255,255,0) 50%);
+                rgba(255,255,255,0) 60%);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
+    mix-blend-mode: overlay;
 }
 
 .interactive-element:hover::after {
@@ -402,17 +487,49 @@ picture img {
 }
 
 .interactive-material-card {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 16px;
+    position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.interactive-material-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(74, 144, 226, 0.1) 0%, 
+                rgba(74, 144, 226, 0) 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.interactive-material-card:hover::before {
+    opacity: 1;
+}
+
+.interactive-material-card:active {
+    transform: scale(0.98);
+}
+
+.material-content {
+    position: relative;
+    z-index: 1;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .material-content h3 {
     color: #4A90E2;
-    margin-bottom: 10px;
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.4;
 }
 
 .material-type {
@@ -422,39 +539,51 @@ picture img {
     border-radius: 6px;
     color: #4A90E2;
     font-size: 12px;
-    margin-bottom: 15px;
+    width: fit-content;
+}
+
+.material-content p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
 }
 
 .material-instructions,
 .material-requirements {
-    margin-top: 15px;
+    margin-top: 8px;
 }
 
 .material-instructions h4,
 .material-requirements h4 {
     color: #4A90E2;
-    margin-bottom: 10px;
+    margin: 0 0 8px 0;
+    font-size: 15px;
 }
 
 .material-instructions ol,
 .material-requirements ul {
     padding-left: 20px;
+    margin: 0;
     color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
 }
 
 .material-instructions li,
 .material-requirements li {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    line-height: 1.5;
 }
 
 .age-group {
     display: inline-block;
-    margin-top: 15px;
+    margin-top: 8px;
     padding: 4px 8px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 6px;
     color: rgba(255, 255, 255, 0.8);
     font-size: 12px;
+    width: fit-content;
 }
 
 /* Стили для викторин */
@@ -831,8 +960,11 @@ picture img {
 
 .quiz-question h3 {
     color: #4A90E2;
-    font-size: 24px;
+    font-size: 20px;
     margin-bottom: 20px;
+    line-height: 1.5;
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
 .quiz-options {
@@ -845,12 +977,15 @@ picture img {
     background: rgba(74, 144, 226, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    color: white;
+    color: rgba(255, 255, 255, 0.9);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: 15px;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
 }
 
 .quiz-option:hover {
@@ -859,18 +994,21 @@ picture img {
 }
 
 .quiz-option.selected {
-    background: rgba(74, 144, 226, 0.3);
-    border-color: #4A90E2;
+    background: rgba(74, 144, 226, 0.2);
+    border-color: rgba(74, 144, 226, 0.5);
+    transform: translateX(5px);
 }
 
 .quiz-option.correct {
-    background: rgba(46, 204, 113, 0.3);
-    border-color: #2ecc71;
+    background: rgba(46, 204, 113, 0.15);
+    border-color: rgba(46, 204, 113, 0.5);
+    color: #2ecc71;
 }
 
 .quiz-option.incorrect {
-    background: rgba(231, 76, 60, 0.3);
-    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.15);
+    border-color: rgba(231, 76, 60, 0.5);
+    color: #e74c3c;
 }
 
 .quiz-progress {
@@ -911,7 +1049,20 @@ picture img {
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    line-height: 1.6;
+    letter-spacing: 0.2px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .quiz-controls {
@@ -955,8 +1106,11 @@ picture img {
 }
 
 .quiz-feedback {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: 0.2px;
 }
 
 .quiz-restart {
@@ -1031,4 +1185,121 @@ picture img {
     .quiz-final-buttons .quiz-button {
         width: 100%;
     }
+}
+
+/* Дополнительные медиа-запросы для очень маленьких экранов */
+@media (max-width: 360px) {
+    .weather-education {
+        padding: 8px;
+        margin: 0;
+        width: 100vw;
+    }
+
+    .education-tabs {
+        padding: 6px;
+        gap: 6px;
+    }
+
+    .tab-button {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .tab-icon {
+        font-size: 16px;
+    }
+
+    .article-image,
+    .phenomenon-image,
+    .kids-content-image,
+    picture {
+        height: 150px;
+    }
+
+    .article-content,
+    .phenomenon-content,
+    .kids-content-info {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .article-content h3,
+    .phenomenon-content h3,
+    .kids-content-info h3 {
+        font-size: 16px;
+    }
+
+    .article-content p,
+    .phenomenon-content p,
+    .kids-content-info p {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 768px) {
+    .weather-education {
+        -webkit-text-size-adjust: 100%;
+        touch-action: pan-x pan-y;
+    }
+
+    .interactive-element {
+        touch-action: manipulation;
+    }
+}
+
+/* Анимации для переключения контента */
+.weather-phenomena,
+.education-articles,
+.interactive-materials,
+.education-quizzes,
+.kids-content,
+.interesting-facts,
+.climate-zones {
+    animation: fadeSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Плавное появление для всех карточек */
+.article-card,
+.phenomenon-card,
+.interactive-material-card,
+.quiz-card,
+.kids-content-card,
+.fact-card,
+.climate-zone-card {
+    animation: cardAppear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-fill-mode: both;
+}
+
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Добавляем задержку для последовательного появления карточек */
+.article-card:nth-child(n),
+.phenomenon-card:nth-child(n),
+.interactive-material-card:nth-child(n),
+.quiz-card:nth-child(n),
+.kids-content-card:nth-child(n),
+.fact-card:nth-child(n),
+.climate-zone-card:nth-child(n) {
+    animation-delay: calc(0.1s * var(--card-index, 0));
 } 

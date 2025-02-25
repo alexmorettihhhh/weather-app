@@ -32,8 +32,8 @@ type CacheEventType = 'set' | 'remove' | 'clear' | 'expired';
 type CacheEventListener = (event: CacheEventType, key: string, value?: unknown) => void;
 
 const DEFAULT_CONFIG: CacheConfig = {
-    duration: 30 * 60 * 1000, // 30 minutes
-    maxSize: 5 * 1024 * 1024, // 5MB
+    duration: 30 * 60 * 1000,
+    maxSize: 5 * 1024 * 1024,
     version: '1.0',
     prefix: 'app_cache_',
     compression: true,
@@ -175,7 +175,7 @@ class CacheManager {
     }
 
     private shouldUseIndexedDB(dataSize: number): boolean {
-        return Boolean(this.config.useIndexedDB && this.indexedDB && dataSize > 1024 * 1024); // > 1MB
+        return Boolean(this.config.useIndexedDB && this.indexedDB && dataSize > 1024 * 1024);
     }
 
     private async setInIndexedDB(key: string, value: string): Promise<void> {
@@ -259,7 +259,6 @@ class CacheManager {
             }
         }
 
-        // Get items from IndexedDB
         if (this.indexedDB) {
             try {
                 const transaction = this.indexedDB.transaction(['cache'], 'readonly');
@@ -293,7 +292,6 @@ class CacheManager {
         const sortedItems = items
             .filter(item => (item.priority || 0) <= minPriority)
             .sort((a, b) => {
-                // Сначала по приоритету, потом по времени
                 const priorityDiff = (a.priority || 0) - (b.priority || 0);
                 if (priorityDiff !== 0) return priorityDiff;
                 return a.timestamp - b.timestamp;
@@ -325,13 +323,10 @@ class CacheManager {
 
     public async clear(prefix?: string): Promise<void> {
         const searchPrefix = prefix || this.config.prefix;
-        
-        // Clear localStorage
         Object.keys(localStorage)
             .filter(key => key.startsWith(searchPrefix!))
             .forEach(key => localStorage.removeItem(key));
 
-        // Clear IndexedDB
         if (this.indexedDB) {
             const transaction = this.indexedDB.transaction(['cache'], 'readwrite');
             const store = transaction.objectStore('cache');
@@ -370,14 +365,12 @@ class CacheManager {
     private async getCacheSize(): Promise<number> {
         let size = 0;
 
-        // Size in localStorage
         Object.keys(localStorage)
             .filter(key => key.startsWith(this.config.prefix!))
             .forEach(key => {
                 size += localStorage.getItem(key)?.length || 0;
             });
 
-        // Size in IndexedDB
         if (this.indexedDB) {
             const transaction = this.indexedDB.transaction(['cache'], 'readonly');
             const store = transaction.objectStore('cache');

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App Logo Generator</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: #646cff;
+            font-weight: bold;
+            border-radius: 20%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo::after {
+            content: "°";
+            position: absolute;
+            top: 10%;
+            right: 20%;
+            font-size: 40%;
+            color: #646cff;
+        }
+        
+        .logo-192 {
+            width: 192px;
+            height: 192px;
+            font-size: 100px;
+        }
+        
+        .logo-512 {
+            width: 512px;
+            height: 512px;
+            font-size: 260px;
+        }
+        
+        .weather-icon {
+            position: absolute;
+            font-size: 40%;
+            bottom: 20%;
+            left: 20%;
+            color: white;
+        }
+        
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #646cff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background-color: #535bf2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather App Logo Generator</h1>
+    
+    <div class="logo-container">
+        <div>
+            <h2>192x192 Logo</h2>
+            <div id="logo192" class="logo logo-192">
+                W
+                <span class="weather-icon">☀️</span>
+            </div>
+        </div>
+        
+        <div>
+            <h2>512x512 Logo</h2>
+            <div id="logo512" class="logo logo-512">
+                W
+                <span class="weather-icon">☀️</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="download192">Download 192x192 Logo</button>
+        <button id="download512">Download 512x512 Logo</button>
+    </div>
+    
+    <script>
+        document.getElementById('download192').addEventListener('click', () => {
+            downloadLogo('logo192', 192, 'pwa-192x192.png');
+        });
+        
+        document.getElementById('download512').addEventListener('click', () => {
+            downloadLogo('logo512', 512, 'pwa-512x512.png');
+        });
+        
+        function downloadLogo(elementId, size, filename) {
+            const element = document.getElementById(elementId);
+            
+            html2canvas(element).then(canvas => {
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+    
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</body>
+</html> 

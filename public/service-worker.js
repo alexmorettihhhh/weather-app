@@ -6,10 +6,10 @@ import { BackgroundSyncPlugin } from 'workbox-background-sync';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { clientsClaim } from 'workbox-core';
 
-// Immediately claim any open clients
+
 clientsClaim();
 
-// Cache name constants
+
 const CACHE_NAMES = {
   static: 'static-resources-v1',
   api: 'api-cache-v1',
@@ -17,7 +17,7 @@ const CACHE_NAMES = {
   offline: 'offline-cache-v1'
 };
 
-// Static resources to precache
+
 const STATIC_RESOURCES = [
   '/',
   '/index.html',
@@ -31,12 +31,12 @@ const STATIC_RESOURCES = [
   '/static/js/bundle.js'
 ];
 
-// Precache static resources
+
 precacheAndRoute(self.__WB_MANIFEST);
 
-// Background sync for failed API requests
+
 const backgroundSyncPlugin = new BackgroundSyncPlugin('weather-sync-queue', {
-  maxRetentionTime: 24 * 60 // Retry for up to 24 hours
+  maxRetentionTime: 24 * 60
 });
 
 // Cache static resources
@@ -52,13 +52,12 @@ registerRoute(
       }),
       new ExpirationPlugin({
         maxEntries: 60,
-        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+        maxAgeSeconds: 30 * 24 * 60 * 60
       })
     ]
   })
 );
 
-// Cache API responses with network-first strategy
 registerRoute(
   ({ url }) => url.origin === 'https://api.weatherapi.com',
   new NetworkFirst({
@@ -94,7 +93,7 @@ registerRoute(
   })
 );
 
-// Offline fallback
+
 const offlineFallback = new NavigationRoute(
   async () => {
     const cache = await caches.open(CACHE_NAMES.offline);
@@ -107,7 +106,6 @@ const offlineFallback = new NavigationRoute(
 
 registerRoute(offlineFallback);
 
-// Periodic background sync
 self.addEventListener('periodicsync', (event) => {
   if (event.tag === 'weather-sync') {
     event.waitUntil(updateWeatherData());
@@ -130,10 +128,10 @@ async function updateWeatherData() {
   }
 }
 
-// Clean up old caches
+
 cleanupOutdatedCaches();
 
-// Handle installation
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     Promise.all([
